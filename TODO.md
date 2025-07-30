@@ -1,0 +1,5 @@
+- add zero
+- add zero drizzle schema gen (look at zotion)
+- add gpt theme https://chatgpt.com/g/g-p-688a25b602a481919f16866c3d0200bf-ai-starter/c/688a2c53-fed4-8326-a93c-ce4080d1d208
+- renamed queries in zero release (createQueries, createMutators)
+- add default "currentUser" query

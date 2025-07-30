@@ -1,0 +1,40 @@
+/* src/styles/theme.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+.btn {
+  @apply px-4 py-1.5 rounded-full border border-black text-sm font-semibold shadow-[2px_2px_0_#00000020] transition;
+  cursor: pointer;
+}
+
+.btn-yellow {
+  @apply bg-yellow-200 hover:bg-yellow-300;
+}
+
+.btn-white {
+  @apply bg-white hover:bg-neutral-100;
+}
+
+.input {
+  @apply w-full px-3 py-1.5 border border-black rounded-md focus:outline-none focus:ring-1 focus:ring-yellow-300 text-sm shadow-[1px_1px_0_#00000015];
+}
+
+.card {
+  @apply bg-white rounded-xl border border-black p-4 shadow-[2px_2px_0_#00000020];
+}
+
+.nav-btn {
+  @apply text-left px-2 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-100 transition;
+  cursor: pointer;
+}
