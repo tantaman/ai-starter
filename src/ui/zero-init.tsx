@@ -15,7 +15,7 @@ export function ZeroInit({ children }: { children: ReactNode }) {
   const props = useMemo(() => {
     return {
       schema,
-      server: window.location.origin,
+      server,
       userID: data?.user?.id ?? "anon",
       mutators: createMutators(data ?? null),
       logLevel: "info",
