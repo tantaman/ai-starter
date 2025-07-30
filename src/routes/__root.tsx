@@ -6,37 +6,13 @@ import {
   createRootRoute,
   HeadContent,
   Scripts,
+  ClientOnly,
 } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
 
-import theme from "../styles/theme.css?url";
-import { auth } from "../server/auth";
-import { getWebRequest } from "@tanstack/react-start/server";
-
-const fetchUser = createServerFn({ method: "GET" }).handler(async () => {
-  const request = getWebRequest();
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  });
-
-  if (session == null) {
-    return null;
-  }
-
-  return {
-    id: session.user.id,
-    name: session.user.name,
-  };
-});
+import theme from "@/styles/theme.css?url";
+import { ZeroInit } from "../ui/zero-init";
 
 export const Route = createRootRoute({
-  beforeLoad: async () => {
-    const user = await fetchUser();
-
-    return {
-      user,
-    };
-  },
   head: () => ({
     meta: [
       {
@@ -51,13 +27,7 @@ export const Route = createRootRoute({
       },
     ],
 
-    links: [
-      { rel: "stylesheet", href: theme },
-      // {
-      //   href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",
-      //   rel: "stylesheet",
-      // },
-    ],
+    links: [{ rel: "stylesheet", href: theme }],
   }),
   component: RootComponent,
 });
@@ -65,7 +35,11 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <ClientOnly fallback={<div>Loading...</div>}>
+        <ZeroInit>
+          <Outlet />
+        </ZeroInit>
+      </ClientOnly>
     </RootDocument>
   );
 }

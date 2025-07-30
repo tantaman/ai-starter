@@ -1,5 +1,5 @@
-import "../shared/env";
-import { exec } from "../shared/exec";
+import "../env.js";
+import { exec } from "../exec.js";
 
 function main() {
   console.log("Attempting to start existing ai_starter containers...");
