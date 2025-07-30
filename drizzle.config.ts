@@ -1,6 +1,6 @@
 import { defineConfig } from "drizzle-kit";
-import "./shared/env";
-import { must } from "./shared/raw";
+import "./env";
+import { must } from "./src/shared/util/must";
 
 const pgURL = must(process.env.PG_URL, "PG_URL is required");
 

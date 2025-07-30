@@ -1,0 +1,3 @@
+ignoredBuiltDependencies:
+  - '@rocicorp/zero-sqlite3'
+  - protobufjs

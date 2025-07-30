@@ -30,7 +30,6 @@ These frameworks have already been configured for you and a project scaffolding 
 |   |-- db/ # Drizzle schema, Drizzle client, postgres connector
 |   |   |-- schema.ts # the Drizzle schema definition
 |   |-- routes/ # The full stack filesystem router.
-|   |   |-- _authed/ # Place routes here that are behind authentication
 |   |   |-- api/ # Place API routes here
 |   |   |-- index.tsx # Main / home page
 |   |-- server/ # Code that only runs server side
@@ -45,19 +44,23 @@ These frameworks have already been configured for you and a project scaffolding 
 
 ### Routes
 
-Any file placed into `routes` will be accessible, over the web, via `/filename` (sans extension). If the file is in a folder in `routes` then the path is `/folder/filename`. An exception to this rule are folders with an underscore (_) prefix. These folders or omitted from the URL. So everything placed into `_authed` is still accessible from the root URL.
+Any file placed into `routes` will be accessible, over the web, via `/filename` (sans extension). If the file is in a folder in `routes` then the path is `/folder/filename`. An exception to this rule are folders with an underscore (\_) prefix. These folders or omitted from the URL. So everything placed into `_foo` is still accessible from the root URL.
 
 Examples:
 If our website is hosted on `http://localhost:3000` then:
+
 1. `routes/index.tsx` will be accessible via `http://localhost:3000`
 2. `routes/intro.tsx` via `http://localhost:3000/intro`
 3. `routes/blog/hello.tsx` via `http://localhost:3000/blog/hello`
-4. `routes/_authed/index.tsx` via `http://localhost:3000`
-5. `routes/_authed/foo.tsx` via `http://localhost:3000/foo`
+4. `routes/_foo/bar.tsx` via `http://localhost:3000/bar`
 
-For the most part, you should only need to place files into the root `routes/` directory or the `routes/_authed/` directory. The latter is for pages that should only be accessible after a user has authenticated.
+For the most part, you should only need to place files into the root `routes/` directory.
 
 The Zero sync server will handle almost all API needs so there should not be any need to ever create new API routes. If you find yourself wanting to create an API route, you can most likely solve the problem with a Zero Mutator or Zero Query. Refer to the Zero section of this document.
+
+The queries and mutators you define for Zero will also check session state, meaning we never need separate routes for authenticated pages.
+
+Routes are strictly typed and the type information is generated into `src/routeTree.gen.ts`. You can regenerate this file by running `pnpm dev`.
 
 ### Styles
 
@@ -77,23 +80,32 @@ function ExampleHome() {
   return (
     <div className="flex h-screen">
       <aside className="w-56 bg-white border border-black p-3 flex flex-col gap-2 rounded-xl m-3 shadow-[2px_2px_0_#00000020]">
-        <div className="text-xl font-extrabold tracking-tight mb-3">AI Starter</div>
+        <div className="text-xl font-extrabold tracking-tight mb-3">
+          AI Starter
+        </div>
         <nav className="flex flex-col divide-y divide-neutral-200">
           <button className="nav-btn">Dashboard</button>
           <button className="nav-btn">Chat</button>
           <button className="nav-btn">Tracker</button>
           <button className="nav-btn">Store</button>
         </nav>
-        <div className="mt-auto text-xs text-neutral-400">© 2025 AI Starter</div>
+        <div className="mt-auto text-xs text-neutral-400">
+          © 2025 AI Starter
+        </div>
       </aside>
 
       <main className="flex-1 p-5 overflow-auto">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold mb-5 tracking-tight">Build Something Smart</h1>
+          <h1 className="text-2xl font-bold mb-5 tracking-tight">
+            Build Something Smart
+          </h1>
 
           <div className="card mb-6">
             <h2 className="text-lg font-semibold mb-2">Compact Card</h2>
-            <p className="text-neutral-700 text-sm">A compact card layout for dense UIs with just enough padding and definition to stay legible and useful.</p>
+            <p className="text-neutral-700 text-sm">
+              A compact card layout for dense UIs with just enough padding and
+              definition to stay legible and useful.
+            </p>
             <div className="mt-4 flex gap-3">
               <button className="btn btn-yellow">Create</button>
               <button className="btn btn-white">Preview</button>
@@ -102,14 +114,20 @@ function ExampleHome() {
 
           <form className="card space-y-4">
             <div>
-              <label className="block mb-1 text-xs font-medium text-neutral-800">Name</label>
+              <label className="block mb-1 text-xs font-medium text-neutral-800">
+                Name
+              </label>
               <input type="text" className="input" />
             </div>
             <div>
-              <label className="block mb-1 text-xs font-medium text-neutral-800">Message</label>
+              <label className="block mb-1 text-xs font-medium text-neutral-800">
+                Message
+              </label>
               <textarea rows={3} className="input"></textarea>
             </div>
-            <button type="submit" className="btn btn-white">Send</button>
+            <button type="submit" className="btn btn-white">
+              Send
+            </button>
           </form>
         </div>
       </main>
@@ -120,16 +138,20 @@ function ExampleHome() {
 
 ## Project Scripts
 
-There are various scripts available for running and validating the project. Each of these has an entry in the `scripts` attribute of `./package.json`.
+There are various scripts available for running and validating the project. Each of these has an entry in the `scripts` attribute of `./package.json`. The package manager is `pnpm` so these scripts can be run with `pnpm run [script name]`.
 
 They are the following:
-- `dev` - runs the whole project. This kicks off a docker container that runs Postgres, Vite to run the UI, and starts the Zero Cache server
+
+- `dev` - runs the whole project. This kicks off a docker container that runs Postgres, Vite to run the UI, and starts the Zero Cache server. Monitor the output of this for errors. It will watch all changes being made to the project and reload things as required, printing errors if something goes wrong.
+- `db:push` - forces the application of a new schema to postgres. Use this whenever making changes to the PG/drizzle schema during development. `db:push` may ask you for input. Monitor the command and provide input if required.
+- `db:studio` - runs the drizzle studio which provides a UI for exploring the contents of the postgres db
 - `dev:web` - you generally do not need to run this. This will run just `vite` and no other components. Prefer `dev` over `dev:web`.
 - `dev:docker` - another command you generally do not need. This will just run postgres in docker and no other components.
 - `dev:zero` - another command you generally do not need. This will run zero cache and no other components. Prefer `dev`.
-- `db:migrate` - migrates the database after a change has been made to the drizzle schema. Use this whenever you change the drizzle schema to update Postres.
-- `db:force:` - forces the application of a new schema to postgres. This is fine to run during local development. You can fall back to this if `db:migrate` is not working.
-- `db:studio` - runs the drizzle studio which provides a UI for exploring the contents of the postgres db
+- `check` - runs type script to check all types
+- `gen-schema` - generates the zero schema from the drizzle schema
+
+`pnpm run dev` will start everything and the website can be visited at the following URL: http://localhost:8080/
 
 ## Architecture
 
@@ -157,9 +179,9 @@ The data layer, being Postgres, is relational and normalized.
 
 **Issues:**
 
-* Customer info is duplicated.
-* Product info is repeated.
-* Hard to update prices/emails consistently.
+- Customer info is duplicated.
+- Product info is repeated.
+- Hard to update prices/emails consistently.
 
 ---
 
@@ -197,9 +219,9 @@ The data layer, being Postgres, is relational and normalized.
 
 **Benefits of normalization:**
 
-* No redundancy: Alice’s email is stored only once.
-* Easier maintenance: If product price changes, update one record.
-* Scalable and consistent structure.
+- No redundancy: Alice’s email is stored only once.
+- Easier maintenance: If product price changes, update one record.
+- Scalable and consistent structure.
 
 ---
 
@@ -224,26 +246,26 @@ Queries are how the client gets data from the server. Queries definitions live i
 
 Zero has a query language called "ZQL" which is a composable query language with many of the features of SQL. The main difference is that ZQL can return hierarchies of data, which a UI often wants, rather than flat, tabular, data.
 
-Queries are built using the ZQL query builder which can be imported from the application's Zero schema. This schema is generated from the Drizzle schema and does not need to be modified directly. The builder has a property for each table.
+Queries are built using the ZQL query builder which can be imported from the application's Zero schema. This schema is generated from the Drizzle schema and does not need to be modified directly. The builder has a property for each table. The builder also exposes `related` calls for each `relationship` defined in the `drizzle` schema.
 
 Example of getting and using the query builder:
 
 ```ts
-import {builder} from '@/shared/schema.js';
+import { builder } from "@/shared/schema.js";
 
-builder.user.where('id', '=', 1);
+builder.user.where("id", "=", 1);
 ```
 
-All methods on the query builder (where, limit, related, exists, start, orderBy) can be chained one after the other. Each call of a method returns a new query instance rather than modifying the existing query. This lets one compose more complex queries from existing queries. 
+All methods on the query builder (where, limit, related, exists, start, orderBy) can be chained one after the other. Each call of a method returns a new query instance rather than modifying the existing query. This lets one compose more complex queries from existing queries.
 
 **Example:**
 
 ```ts
-import {builder} from '@/shared/schema.js';
+import { builder } from "@/shared/schema.js";
 
-const allUsers = builder.user;
-const allVerifiedUsers = allUsers.where('emailVerified', '=', true);
-const allVerifiedUsersNamedBrad = allVerifiedUsers.where('name', '=', 'Brad');
+const allUsers = builder.user; // returns User[]
+const allVerifiedUsers = allUsers.where("emailVerified", "=", true); // returns User[]
+const allVerifiedUsersNamedBrad = allVerifiedUsers.where("name", "=", "Brad"); // returns User[]
 ```
 
 #### ZQL: Where
@@ -251,14 +273,14 @@ const allVerifiedUsersNamedBrad = allVerifiedUsers.where('name', '=', 'Brad');
 `where(column, operator, value)`
 
 ```ts
-import {builder} from '@/shared/schema.js';
-import {escapeLike} from '@rocicorp/zero';
+import { builder } from "@/shared/schema.js";
+import { escapeLike } from "@rocicorp/zero";
 
 // a `where` method is available for each table.
 // `where` can be used to filter rows for that table.
-builder.user.where('id', '=', 1);
-const substr = 'foo';
-builder.user.where('email', 'ILIKE', `%${escapeLike(substr)}%`)
+builder.user.where("id", "=", 1);
+const substr = "foo";
+builder.user.where("email", "ILIKE", `%${escapeLike(substr)}%`);
 
 // where supports many comparison operators:
 // =, <, >, <=, >=, LIKE, !=, IS, IS NOT
@@ -266,7 +288,26 @@ builder.user.where('email', 'ILIKE', `%${escapeLike(substr)}%`)
 
 // Chaining multiple `where` clauses together ANDs the filters
 // Users created at least 24 hours ago and updated within the last day.
-builder.user.where('createdAt', '<', Date.now() - 86400 * 1000).where('updatedAt', '>', Date.now() - 86400 * 1000);
+builder.user
+  .where("createdAt", "<", Date.now() - 86400 * 1000)
+  .where("updatedAt", ">", Date.now() - 86400 * 1000);
+```
+
+Where must be done via the above syntax. These are incorrect where clauses:
+
+```ts
+// INCORRECT. This is Prisma, not ZQL, syntax:
+await prisma.user.findMany({
+  where: {
+    email: "john@example.com",
+  },
+});
+
+// INCORRECT. This is Drizzle, not ZQL, syntax:
+const users = await db
+  .select()
+  .from(usersTable)
+  .where(eq(usersTable.email, "john@example.com"));
 ```
 
 #### ZQL: Limit
@@ -274,13 +315,16 @@ builder.user.where('createdAt', '<', Date.now() - 86400 * 1000).where('updatedAt
 `limit(n: number)`
 
 ```ts
-import {builder} from '@/shared/schema.js';
+import { builder } from "@/shared/schema.js";
 
 // last 10 users to be created
-builder.user.limit(10).orderBy('createdAt', 'desc');
+builder.user.limit(10).orderBy("createdAt", "desc");
 
 // last 10 users to be created and have a verified email
-builder.user.where('emailVerified', '=', true).limit(10).orderBy('createdAt', 'desc');
+builder.user
+  .where("emailVerified", "=", true)
+  .limit(10)
+  .orderBy("createdAt", "desc");
 ```
 
 #### ZQL: Related
@@ -289,20 +333,62 @@ builder.user.where('emailVerified', '=', true).limit(10).orderBy('createdAt', 'd
 
 `related` lets the developer traverse relationships and return trees of data. This is really helpful when building a UI as a UI often needs a tree of data. Think of an issue detail page in an issue tracker. It needs: an issue, the owner, the creator, tags, related comments, comment authors, comment reactions, etc. to show the full context of an issue.
 
+`related` relationships are set up in the drizzle schema using its `relations` API.
+
 The first argument to `related` is the name of the relationship to follow. These names will match the relationships defined in your drizzle schema (`src/db/schema.ts`).
 
 ```ts
-import {builder} from '@/shared/schema.js';
+import { builder } from "@/shared/schema.js";
 
 // Get all of the related data to build a detailed issue view
 builder.issue
-  .where('id', '=', some_provided_issue_id)
-  .related('assignee')
-  .related('owner')
-  .related('comments', commentQuery => commentQuery.related('author').related('reactions'));
+  .where("id", "=", some_provided_issue_id)
+  .related("assignee")
+  .related("owner")
+  .related("comments", (commentQuery) =>
+    commentQuery.related("author").related("reactions")
+  );
 ```
 
 `related` also takes a second, optional, parameter. This parameter is a callback which can apply additional filters, limits, orderings, etc. to the related data. In the above example we do this for `comments` and grab their related authors and reactions.
+
+Related also changes the shape of the returned data. Here are some examples of the shapes of data returned by different queries:
+
+```ts
+import { builder } from "@/shared/schema.js";
+
+const result = await builder.issue;
+// typeof result => Issue[];
+
+const result = await builder.issue.related("comments");
+// typeof result => (Issue & { comments: Comment[] })[];
+
+const result = await builder.issue.related("comments").related("assignee");
+// typeof result => (Issue & { comments: Comment[], assignee: User })[]
+```
+
+In the last example you can see that if the related edge is 1-1 then the attribute value is not an array (in the case of assignee).
+
+The return type of a query can be automatically inferred with some utilities. Examples:
+
+```ts
+import { queries } from "@/shared/queries.js";
+import { Row } from "@rocicorp/zero";
+
+type UserResult = Row<ReturnType<typeof queries.user>>;
+type IssuesResult = Row<ReturnType<typeof queries.issues>>;
+```
+
+The row type for an individual item in the schema can also be retrieved:
+
+```ts
+import { schema } from "@/shared/schema.js";
+import { Row } from "@rocicorp/zero";
+
+type User = Row<typeof schema.tables.user>;
+```
+
+Given all of that, you do not have to manually define types for query results or individual rows.
 
 #### ZQL: Exists
 
@@ -311,11 +397,10 @@ builder.issue
 Sometimes you want to return data depending on the result of a subquery. `exists` enables this.
 
 ```ts
-import {builder} from '@/shared/schema.js';
+import { builder } from "@/shared/schema.js";
 
 // find all issues that have comments
-builder.issue
-  .whereExists('comments');
+builder.issue.whereExists("comments");
 ```
 
 The first argument to `exists` is the same as the first arg to related: the relationship name to traverse.
@@ -324,8 +409,9 @@ Like `related`, `exists` also takes a second argument. This second argument lets
 
 ```ts
 // find all issues that have comments in the last 24 hours
-builder.issue
-  .whereExists('comments', q => q.where('created', '>', Date.now() - 86400 * 1000));
+builder.issue.whereExists("comments", (q) =>
+  q.where("created", ">", Date.now() - 86400 * 1000)
+);
 ```
 
 #### ZQL: Start / Offset
@@ -338,7 +424,10 @@ ZQL provides a `start` function to do pagination. Start takes a row after which 
 - all other columns used in any `orderBy` clauses of the query it is being passed to
 
 ```ts
-builder.user.limit(100).orderBy('createdAt', 'asc').start(endingRowFromLastPage);
+builder.user
+  .limit(100)
+  .orderBy("createdAt", "asc")
+  .start(endingRowFromLastPage);
 ```
 
 #### ZQL: OrderBy
@@ -356,96 +445,306 @@ Where can take a callback in order to build complex expressions. On that callbac
 - cmp (compare)
 
 ```ts
-builder.user.where(({and, or, not, exists, cmp}) => or(
-  cmp('id', '=', 'u1'),
-  cmp('id', '=', 'u2')
-));
+builder.user.where(({ and, or, not, exists, cmp }) =>
+  or(cmp("id", "=", "u1"), cmp("id", "=", "u2"))
+);
+```
+
+#### ZQL: One
+
+`one()`
+
+Tells the query system that we expect a single result. Returns that single row rather than an array of rows.
+
+Syntactic sugar for:
+
+```ts
+const row = (await query.limit(1))[0];
 ```
 
 #### Adding to queries.ts
 
 For the context of this application, place all queries into `queries.ts`. A skeleton is already set up for you there. Queries are named functions placed into `createQueriesWithContext({ ... })`.
 
-
 **Example:**
 
 ```ts
 // src/shared/queries.ts
-import {builder} from '@/shared/schema.js';
-import {createQueriesWithContext} from '@rocicorp/zero';
+import { builder, Session } from "@/shared/schema.js";
+import { createQueriesWithContext } from "@rocicorp/zero";
 
 export const queries = createQueriesWithContext({
-  issueDetail() {
+  currentUser(sess: Session | undefined) {
+    return builder.user.where("id", "IS", sess?.user.id ?? null).one();
+  },
 
-  }
+  issues(sess: Session | undefined, open: boolean) {
+    return builder.issue.where("open", "=", open);
+  },
 });
 ```
 
 ### Zero Mutators
 
+Mutators are functions which can update state in Zero. Those state updates flow upstream to Postgres and update the system of record there.
+
+Place all mutator definitions in `src/shared/mutators.ts`.
+
+**Example:**
+
+```ts
+import { CustomMutatorDefs } from "@rocicorp/zero";
+import { schema, Session } from "./schema.js";
+
+export function createMutators(sess: Session | undefined) {
+  return {
+    createIssue(tx, { id, title, description }) {
+      if (!sess) throw new Error("Not authenticated");
+      await tx.mutate.issue.insert({ id, title, description });
+    },
+  } as const satisfies CustomMutatorDefs<typeof schema>;
+}
+```
+
+The `tx` object provided to the mutator bodies exposes `insert`, `update`, and `delete` methods on its `tx.mutate` property. These are capable of updating individual rows only. They cannot do complex conditions which impact many rows.
+
+Example use of the `tx` object in a mutator body:
+
+```ts
+tx.mutate.issue.insert({
+  id,
+  title,
+  assigneeId,
+  // other columns
+});
+tx.mutate.delete({
+  id,
+  // any other columns that are part of the primary key
+});
+tx.mutate.update({
+  id,
+  // other columns to update
+});
+```
+
+Mutators defined in `mutators.ts` will be made available on the `zero` instance that can be gotten from the `useZero` hook. The `tx` is filled in by `zero` and is not needed wen calling a mutator.
+
+E.g.,
+
+```ts
+import { useZero } from "@/ui/use-zero.js";
+
+export function SomeComponent() {
+  const zero = useZero();
+  function callback() {
+    zero.mutate[/* mutator name */](/* mutator args*/);
+  }
+
+  // ...
+}
+```
+
 ### React Integration
+
+Zero provides two main hooks:
+
+- useQuery
+- useZero
+
+**useQuery Example:**
+
+```ts
+import { useSession } from "@/client/auth.js";
+import { queries } from "@/shared/queries.js";
+
+export function SomeComponent() {
+  const { data: sessionData } = useSession();
+  const [user] = useQuery(queries.currentUser(sessionData));
+  const [issues] = useQuery(queries.issues(sessionData));
+
+  // ...
+  return (
+    <ul>
+      {issues.map((i) => (
+        <li>{i.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+`useQuery` is reactive. If any data changes (on the client _or_ the server) that impacts the results of the query, `useQuery` will re-render the component with the updated data. This makes it trivial to build realtime systems that need to respond to interactions by other users. E.g., chat. No polling or special event streams need to be set up. Zero handles all of this.
+
+**useZero Example:**
+
+```ts
+import { useZero } from "@/ui/use-zero.js";
+
+export function SomeComponent() {
+  const zero = useZero();
+  function onSubmit() {
+    return zero.mutate.createIssue({ id, title, description });
+  }
+
+  // ...
+}
+```
 
 ### Preloading Data
 
+If the application would like to preload data so it is available on device but not yet displayed, the Zero instance provides a `preload` function.
+
+Example:
+
+```ts
+import { useZero } from "@/ui/use-zero.js";
+import { queries } from "@/shared/queries.js";
+
+export function ATopLevelComponent() {
+  const zero = useZero();
+  const { data: sess } = useSession();
+  useEffect(() => {
+    // preload all open issues
+    const { cleanup } = zero.preload(queries.issues(sess, true));
+
+    // cleanup the preload on unmount
+    return () => cleanup();
+  }, [zero, sess]);
+}
+```
+
 ### Permissions
 
+All permission checks are handled within Zero query and mutator definitions. Authentication is already taken care of for you. If you need access to session information on the client you can use the `useSession` react hook.
 
-## Process & Output
+Example:
 
-* **PRD Generation:** **Always generate a `./src/prd.md` file first** on initial request first. Keep the PRD up to date during future changes.
-* **File Order (Initial Generation):**
-    1.  `./src/prd.md` (Using the framework)
-    2.  Any other necessary files
+```ts
+import { useSession } from "@/client/auth.js";
 
-### PRD
+export function SomeComponent() {
+  const { data } = useSession();
+  // ...
+}
+```
 
-* Product requirement documents (PRD) are a shared forum for the agent & user to collaborate. They are a pre-structured way of thinking about the problem and help to create beautiful, usable websites more efficiently.
-* PRDs must be generated if they don't exist and then kept up to date as you apply revisions.
+You will pass the session information when calling Zero mutators and queries. That session information will then be available inside the query and mutator definitions.
 
-Here is the thinking framework for generating the PRD. You _must_ be thorough and include notes for each section in the final output.
+Example:
 
-<prd-framework>
-# Planning Guide
+```ts
+import { useSession } from "@/client/auth.js";
+import { queries } from "@/shared/queries.js";
 
-## Core Purpose & Success
-- **Mission Statement**: What's the one-sentence purpose of this website?
-- **Success Indicators**: How will we measure if this website achieves its goals?
-- **Experience Qualities**: What three adjectives should define the user experience?
+export function SomeComponent() {
+  const { data: sessionData } = useSession();
+  const [user] = useQuery(queries.currentUser(sessionData));
+  const zero = useZero();
 
-## Project Classification & Approach
-- **Complexity Level**:
-  - Micro Tool (single-purpose)
-  - Content Showcase (information-focused)
-  - Light Application (multiple features with basic state)
-  - Complex Application (advanced functionality, accounts)
-- **Primary User Activity**: Consuming, Acting, Creating, or Interacting?
+  function onCreate(args) {
+    zero.mutate.createSomething(sessionData, args);
+  }
 
-## Thought Process for Feature Selection
-- **Core Problem Analysis**: What specific problem are we solving?
-- **User Context**: When and how will users engage with this site?
-- **Critical Path**: Map the essential journey from entry to goal completion
-- **Key Moments**: Identify 2-3 pivotal interactions that define the experience
+  // ...
+}
+```
 
-## Essential Features
-For each core feature:
-- What it does (functionality)
-- Why it matters (purpose)
-- How we'll validate it works (success criteria)
+### Auth and Login
 
-## Edge Cases & Problem Scenarios
-- **Potential Obstacles**: What might prevent users from succeeding?
-- **Edge Case Handling**: How will the site handle unexpected user behaviors?
-- **Technical Constraints**: What limitations should we be aware of?
+Better-auth is used in the project. To log a user in with github you can do:
 
-## Implementation Considerations
-- **Scalability Needs**: How might this grow over time?
-- **Testing Focus**: What assumptions need validation?
-- **Critical Questions**: What unknowns could impact the project's success?
-- **Data Model**: What new tables, columns or relationships may be required?
-- **Permissions**: What rules govern who can read or write a given piece of data?
+```ts
+import { useState } from "react";
+import { signIn } from "@/client/auth";
 
-## Reflection
-- What makes this approach uniquely suited to this particular need?
-- What assumptions have we made that should be challenged?
-- What would make this solution truly exceptional?
-</prd-framework>
+export function SomeComponent() {
+  function login() {
+    const response = await signIn.social({
+      provider: "github",
+    });
+  }
+
+  return <button onClick={login}>login</button>;
+}
+```
+
+To log a user in with their email and password:
+
+```ts
+import { useState } from "react";
+import { signIn } from "@/client/auth";
+
+export function SomeComponent() {
+  function emailLogin() {
+    const response = await signIn.email({
+      email, // get email from somewhere
+      password, // get password from somewhere
+    });
+  }
+
+  return <button onClick={login}>login</button>;
+}
+```
+
+More detailed example can be seen in `src/ui/login-form.tsx`
+
+## TypeScript Coding Guidelines for Claude
+
+### Variable Declaration Rules
+
+#### Always Use Explicit Type Annotations
+
+- **REQUIRED**: All variable declarations must include explicit type annotations
+- **NO**: `let x = [];`
+- **YES**: `let x: SomeType[] = [];`
+
+#### Examples
+
+##### Array Declarations
+
+```typescript
+// ❌ Avoid - TypeScript infers never[]
+let items = [];
+
+// ✅ Required - Explicit type annotation
+let items: string[] = [];
+let users: User[] = [];
+let config: Array<{ name: string; enabled: boolean }> = [];
+```
+
+##### Object Declarations
+
+```typescript
+// ❌ Avoid - Unclear intent
+let state = {};
+
+// ✅ Required - Explicit type annotation
+let state: { loading: boolean; data: any } = {};
+let options: Record<string, boolean> = {};
+```
+
+##### Primitive Declarations
+
+```typescript
+// ❌ Avoid when type isn't obvious from initializer
+let count;
+
+// ✅ Required - Always annotate
+let count: number;
+let isActive: boolean = false;
+let message: string = "";
+```
+
+#### Exception Cases
+
+Type annotations may be omitted only when:
+
+1. The type is immediately obvious from the initializer: `const PI = 3.14159`
+2. Using `const` assertions: `const config = {api: 'v1'} as const`
+3. Function return types when explicitly declared elsewhere
+
+#### Enforcement
+
+- Apply this rule to ALL variable declarations in TypeScript code
+- Include type annotations even when TypeScript could infer the type
+- Prioritize code clarity and explicit intent over brevity
