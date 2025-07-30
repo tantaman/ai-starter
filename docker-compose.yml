@@ -1,9 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
     image: postgres:17-alpine
     container_name: ai_starter-postgres
+    command: ["postgres", "-c", "wal_level=logical"]
     environment:
       POSTGRES_DB: ai_starter
       POSTGRES_USER: postgres

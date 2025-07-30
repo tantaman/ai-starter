@@ -8,16 +8,22 @@
     "dev": "tsx scripts/dev.ts",
     "dev:web": "vite dev",
     "dev:docker": "tsx scripts/dev-docker.ts",
+    "dev:proxy": "tsx proxy.ts",
+    "dev:zero": "zero-cache",
+    "gen-schema": "drizzle-zero generate -s ./src/db/schema.ts --format -o ./src/shared/schema.gen.ts",
     "build": "vite build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:force": "drizzle-kit push --force"
+    "db:push": "drizzle-kit push --force",
+    "check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@rocicorp/zero": "file:../../mono/packages/zero/rocicorp-zero-0.22.2025072901.tgz",
+    "@rocicorp/zero-sqlite3": "^1.0.8",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-router": "^1.128.0",
     "@tanstack/react-start": "^1.128.1",
@@ -25,6 +31,8 @@
     "concurrently": "^9.2.0",
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.3",
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5",
     "postgres": "^3.4.7",
     "puppeteer": "^24.14.0",
     "react": "^19.1.0",
@@ -37,10 +45,22 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "chokidar-cli": "^3.0.0",
     "dotenv-expand": "^12.0.2",
     "drizzle-kit": "^0.31.4",
+    "drizzle-zero": "^0.13.1",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "wait-on": "^8.0.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@rocicorp/zero-sqlite3",
+      "@tailwindcss/oxide",
+      "esbuild",
+      "puppeteer"
+    ]
   }
 }
