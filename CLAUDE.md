@@ -531,7 +531,8 @@ export const queries = createQueriesWithContext({
 
 Mutators are functions which can update state in Zero. Those state updates flow upstream to Postgres and update the system of record there.
 
-Place all mutator definitions in `src/shared/mutators.ts`. Mutators that are defined in `src/shared/mutators.ts` must be pure in that they cannot invoke sources of randomness or changing values. UUIDs must be passed in, for example, rather than generated in the mutator body.
+Place all mutator definitions in `src/shared/mutators.ts`. Mutators that are defined in `src/shared/mutators.ts` must be pure
+functions over their input arguments and database state. They cannot invoke sources of randomness or changing values. UUIDs, created time, modified time, etc. must be passed in, for example, rather than generated in the mutator body.
 
 All arguments to mutators must be JSON compatible values (string, boolean, number, null). Note that Zero represents dates as milliseconds since epoch.
 
@@ -572,6 +573,14 @@ tx.mutate.update({
 });
 ```
 
+The `tx` object is also capable of querying the local database.
+
+Example:
+
+```ts
+const user = await tx.query.user.where("id", "IS", sess?.user.id);
+```
+
 Mutators defined in `mutators.ts` will be made available on the `zero` instance that can be gotten from the `useZero` hook. The `tx` is filled in by `zero` and is not needed wen calling a mutator.
 
 E.g.,
@@ -588,6 +597,10 @@ export function SomeComponent() {
   // ...
 }
 ```
+
+#### Server Side Mutators
+
+An exception to the purity rule is mutators that run server side. A mutator can have a server side definition that is not pure. A mutator's server side version defaults to `./src/shared/mutators.ts` but a custom implementation for the server can be added to `./src/server/server-mutators.ts`. This is useful for computing authoritative created and modified dates on the server.
 
 ### React Integration
 
@@ -693,6 +706,12 @@ export function SomeComponent() {
   // ...
 }
 ```
+
+The `./src/shared/queries.ts` and `./src/shared/mutators.ts` files are deployed on the client and server. When a query is run against the server, the server loads its copy of the file. In this way, a client cannot just send arbitrary query text so the system is rather secure. If you need a mutator or query to run _different_ logic on the server than it runs on the client, you can place your divergent definition into `./src/server/server-queries.ts` or `./src/server/server-mutators.ts`.
+
+An example use case for `server-queries.ts` is to check the user's role and, based on that role, add or remove conditions from the query.
+
+Write permissions must be encoded into mutator definitions as well. E.g., if a user should only be able to modify their own data then the mutator body should check that the `owner` of a row matches the logged in user from the current session.
 
 ### Auth and Login
 

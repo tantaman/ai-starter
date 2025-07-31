@@ -2,7 +2,7 @@ import { auth } from "@/server/auth.js";
 import { AnyQuery, ReadonlyJSONValue } from "@rocicorp/zero";
 import { getQueries } from "@rocicorp/zero/server";
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { queries } from "@/shared/queries.js";
+import { queries } from "@/server/server-queries.js";
 import { Session, schema } from "@/shared/schema.js";
 
 export const ServerRoute = createServerFileRoute("/api/query").methods({
