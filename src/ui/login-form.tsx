@@ -57,11 +57,11 @@ export function LoginForm() {
 
   return (
     <div className="card w-full max-w-md">
-      {error && <div className="text-red-500">{error}</div>}
+      {error && <div className="text-error">{error}</div>}
       <h2 className="text-lg font-semibold mb-4">Login to Your Account</h2>
       <form className="space-y-4" onSubmit={emailLogin}>
         <div>
-          <label className="block mb-1 text-xs font-medium text-neutral-800">
+          <label className="block mb-1 text-xs font-medium text-heading">
             Email
           </label>
           <input type="email" className="input" placeholder="email" />
@@ -74,15 +74,15 @@ export function LoginForm() {
         <button
           disabled={loggingIn}
           type="submit"
-          className="btn btn-yellow w-full"
+          className="btn btn-primary w-full"
         >
           Login with Email
         </button>
       </form>
-      <div className="text-center text-sm text-neutral-500 my-4">or</div>
+      <div className="text-center text-sm text-muted my-4">or</div>
       <button
         disabled={loggingIn}
-        className="btn btn-white w-full flex items-center justify-center gap-2"
+        className="btn btn-default w-full flex items-center justify-center gap-2"
         onClick={() => githubLogin()}
       >
         <svg
