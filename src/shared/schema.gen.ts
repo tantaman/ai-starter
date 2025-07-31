@@ -160,6 +160,286 @@ export const schema = {
       },
       primaryKey: ["id"],
     },
+    availabilitySchedule: {
+      name: "availabilitySchedule",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "availabilitySchedule",
+            "id"
+          >,
+        },
+        userId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "availabilitySchedule",
+            "userId"
+          >,
+          serverName: "user_id",
+        },
+        dayOfWeek: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "availabilitySchedule",
+            "dayOfWeek"
+          >,
+          serverName: "day_of_week",
+        },
+        startTime: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "availabilitySchedule",
+            "startTime"
+          >,
+          serverName: "start_time",
+        },
+        endTime: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "availabilitySchedule",
+            "endTime"
+          >,
+          serverName: "end_time",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "availabilitySchedule",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "availabilitySchedule",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "availability_schedule",
+    },
+    booking: {
+      name: "booking",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "id"
+          >,
+        },
+        eventTypeId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "eventTypeId"
+          >,
+          serverName: "event_type_id",
+        },
+        hostId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "hostId"
+          >,
+          serverName: "host_id",
+        },
+        guestName: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "guestName"
+          >,
+          serverName: "guest_name",
+        },
+        guestEmail: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "guestEmail"
+          >,
+          serverName: "guest_email",
+        },
+        startTime: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "startTime"
+          >,
+          serverName: "start_time",
+        },
+        endTime: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "endTime"
+          >,
+          serverName: "end_time",
+        },
+        status: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "status"
+          >,
+        },
+        notes: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "notes"
+          >,
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "booking",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
+    eventType: {
+      name: "eventType",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "id"
+          >,
+        },
+        userId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "userId"
+          >,
+          serverName: "user_id",
+        },
+        title: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "title"
+          >,
+        },
+        description: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "description"
+          >,
+        },
+        duration: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "duration"
+          >,
+        },
+        color: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "color"
+          >,
+        },
+        active: {
+          type: "boolean",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "active"
+          >,
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "eventType",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "event_type",
+    },
     session: {
       name: "session",
       columns: {
@@ -380,7 +660,80 @@ export const schema = {
       primaryKey: ["id"],
     },
   },
-  relationships: {},
+  relationships: {
+    availabilitySchedule: {
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    booking: {
+      eventType: [
+        {
+          sourceField: ["eventTypeId"],
+          destField: ["id"],
+          destSchema: "eventType",
+          cardinality: "one",
+        },
+      ],
+      host: [
+        {
+          sourceField: ["hostId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    eventType: {
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      bookings: [
+        {
+          sourceField: ["id"],
+          destField: ["eventTypeId"],
+          destSchema: "booking",
+          cardinality: "many",
+        },
+      ],
+    },
+    user: {
+      eventTypes: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "eventType",
+          cardinality: "many",
+        },
+      ],
+      availabilitySchedules: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "availabilitySchedule",
+          cardinality: "many",
+        },
+      ],
+      hostBookings: [
+        {
+          sourceField: ["id"],
+          destField: ["hostId"],
+          destSchema: "booking",
+          cardinality: "many",
+        },
+      ],
+    },
+  },
 } as const;
 
 /**

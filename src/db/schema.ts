@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -59,3 +60,96 @@ export const verification = pgTable("verification", {
     () => /* @__PURE__ */ new Date(),
   ),
 });
+
+export const eventType = pgTable("event_type", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  duration: integer("duration").notNull(), // in minutes
+  color: text("color").default("#3b82f6"),
+  active: boolean("active")
+    .$defaultFn(() => true)
+    .notNull(),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export const availabilitySchedule = pgTable("availability_schedule", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  dayOfWeek: integer("day_of_week").notNull(), // 0 = Sunday, 1 = Monday, etc.
+  startTime: text("start_time").notNull(), // HH:MM format
+  endTime: text("end_time").notNull(), // HH:MM format
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export const booking = pgTable("booking", {
+  id: text("id").primaryKey(),
+  eventTypeId: text("event_type_id")
+    .notNull()
+    .references(() => eventType.id, { onDelete: "cascade" }),
+  hostId: text("host_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  guestName: text("guest_name").notNull(),
+  guestEmail: text("guest_email").notNull(),
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time").notNull(),
+  status: text("status", { enum: ["pending", "confirmed", "cancelled"] })
+    .$defaultFn(() => "confirmed")
+    .notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+// Relations
+export const userRelations = relations(user, ({ many }) => ({
+  eventTypes: many(eventType),
+  availabilitySchedules: many(availabilitySchedule),
+  hostBookings: many(booking),
+}));
+
+export const eventTypeRelations = relations(eventType, ({ one, many }) => ({
+  user: one(user, {
+    fields: [eventType.userId],
+    references: [user.id],
+  }),
+  bookings: many(booking),
+}));
+
+export const availabilityScheduleRelations = relations(availabilitySchedule, ({ one }) => ({
+  user: one(user, {
+    fields: [availabilitySchedule.userId],
+    references: [user.id],
+  }),
+}));
+
+export const bookingRelations = relations(booking, ({ one }) => ({
+  eventType: one(eventType, {
+    fields: [booking.eventTypeId],
+    references: [eventType.id],
+  }),
+  host: one(user, {
+    fields: [booking.hostId],
+    references: [user.id],
+  }),
+}));

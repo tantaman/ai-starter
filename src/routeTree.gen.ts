@@ -11,16 +11,40 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as BookingsRouteImport } from './routes/bookings'
+import { Route as AvailabilityRouteImport } from './routes/availability'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BookEventTypeIdRouteImport } from './routes/book/$eventTypeId'
 import { ServerRoute as ApiQueryServerRouteImport } from './routes/api/query'
 import { ServerRoute as ApiMutateServerRouteImport } from './routes/api/mutate'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingsRoute = BookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AvailabilityRoute = AvailabilityRouteImport.update({
+  id: '/availability',
+  path: '/availability',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookEventTypeIdRoute = BookEventTypeIdRouteImport.update({
+  id: '/book/$eventTypeId',
+  path: '/book/$eventTypeId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiQueryServerRoute = ApiQueryServerRouteImport.update({
@@ -41,24 +65,51 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/availability': typeof AvailabilityRoute
+  '/bookings': typeof BookingsRoute
+  '/login': typeof LoginRoute
+  '/book/$eventTypeId': typeof BookEventTypeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/availability': typeof AvailabilityRoute
+  '/bookings': typeof BookingsRoute
+  '/login': typeof LoginRoute
+  '/book/$eventTypeId': typeof BookEventTypeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/availability': typeof AvailabilityRoute
+  '/bookings': typeof BookingsRoute
+  '/login': typeof LoginRoute
+  '/book/$eventTypeId': typeof BookEventTypeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/availability'
+    | '/bookings'
+    | '/login'
+    | '/book/$eventTypeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/availability' | '/bookings' | '/login' | '/book/$eventTypeId'
+  id:
+    | '__root__'
+    | '/'
+    | '/availability'
+    | '/bookings'
+    | '/login'
+    | '/book/$eventTypeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AvailabilityRoute: typeof AvailabilityRoute
+  BookingsRoute: typeof BookingsRoute
+  LoginRoute: typeof LoginRoute
+  BookEventTypeIdRoute: typeof BookEventTypeIdRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/mutate': typeof ApiMutateServerRoute
@@ -92,11 +143,39 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookings': {
+      id: '/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof BookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/availability': {
+      id: '/availability'
+      path: '/availability'
+      fullPath: '/availability'
+      preLoaderRoute: typeof AvailabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book/$eventTypeId': {
+      id: '/book/$eventTypeId'
+      path: '/book/$eventTypeId'
+      fullPath: '/book/$eventTypeId'
+      preLoaderRoute: typeof BookEventTypeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -129,6 +208,10 @@ declare module '@tanstack/react-start/server' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AvailabilityRoute: AvailabilityRoute,
+  BookingsRoute: BookingsRoute,
+  LoginRoute: LoginRoute,
+  BookEventTypeIdRoute: BookEventTypeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
