@@ -33,9 +33,11 @@ These frameworks have already been configured for you and a project scaffolding 
 |   |   |-- api/ # Place API routes here
 |   |   |-- index.tsx # Main / home page
 |   |-- server/ # Code that only runs server side
+|   |   |-- server-queries.ts # Code that should run for a query only on the server. Good place for permission checks.
+|   |   |-- server-mutators.ts # Code that should run for a mutator only on the server. Good place for permission checks.
 |   |-- shared/ # Code that is used by both client and server
-|   |   |-- queries/ # Zero query definitions
-|   |   |-- mutators/ # Zero mutator definitions
+|   |   |-- queries.ts # Zero query definitions shared by client and server
+|   |   |-- mutators.ts # Zero mutator definitions shared by client and server
 |   |   |-- schema.ts # The Zero schema. Used to build ZQL queries. Generated from the Drizzle schema.
 |   |-- styles/ # CSS files, included by JS files
 |   |-- ui/ # UI components (nav, headers, footers, buttons, etc.)
@@ -486,6 +488,15 @@ export const queries = createQueriesWithContext({
   issues(sess: Session | null, open: boolean) {
     return builder.issue.where("open", "=", open);
   },
+
+  privateData(sess: Session | null) {
+    const q = builder.issue.where('ownerId', 'IS' sess?.user.id ?? null);
+
+    // IMPORTANT! The query is built _before_ checking the session
+    // and modified if the user is not logged in. This ensures query shape stays
+    // the same regardless of login state.
+    return sess ? q : q.where(({or}) => or())
+  }
 });
 ```
 
@@ -518,8 +529,6 @@ export const queries = createQueriesWithContext({
     if (sess == null) {
       // ✅ do this:
       return q.where(({ or }) => or());
-      // ❌ not this (the returned query has a different shape because it lacks related calls):
-      return builder.issue.where(({ or }) => or());
     }
 
     return q;
@@ -531,7 +540,8 @@ export const queries = createQueriesWithContext({
 
 Mutators are functions which can update state in Zero. Those state updates flow upstream to Postgres and update the system of record there.
 
-Place all mutator definitions in `src/shared/mutators.ts`. Mutators that are defined in `src/shared/mutators.ts` must be pure in that they cannot invoke sources of randomness or changing values. UUIDs must be passed in, for example, rather than generated in the mutator body.
+Place all mutator definitions in `src/shared/mutators.ts`. Mutators that are defined in `src/shared/mutators.ts` must be pure
+functions over their input arguments and database state. They cannot invoke sources of randomness or changing values. UUIDs, created time, modified time, etc. must be passed in, for example, rather than generated in the mutator body.
 
 All arguments to mutators must be JSON compatible values (string, boolean, number, null). Note that Zero represents dates as milliseconds since epoch.
 
@@ -572,6 +582,14 @@ tx.mutate.update({
 });
 ```
 
+The `tx` object is also capable of querying the local database.
+
+Example:
+
+```ts
+const user = await tx.query.user.where("id", "IS", sess?.user.id);
+```
+
 Mutators defined in `mutators.ts` will be made available on the `zero` instance that can be gotten from the `useZero` hook. The `tx` is filled in by `zero` and is not needed wen calling a mutator.
 
 E.g.,
@@ -588,6 +606,10 @@ export function SomeComponent() {
   // ...
 }
 ```
+
+#### Server Side Mutators
+
+An exception to the purity rule is mutators that run server side. A mutator can have a server side definition that is not pure. A mutator's server side version defaults to `./src/shared/mutators.ts` but a custom implementation for the server can be added to `./src/server/server-mutators.ts`. This is useful for computing authoritative created and modified dates on the server.
 
 ### React Integration
 
@@ -694,6 +716,48 @@ export function SomeComponent() {
 }
 ```
 
+The `./src/shared/queries.ts` and `./src/shared/mutators.ts` files are deployed on the client and server. When a query is run against the server, the server loads its copy of the file. In this way, a client cannot just send arbitrary query text so the system is rather secure. If you need a mutator or query to run _different_ logic on the server than it runs on the client, you can place your divergent definition into `./src/server/server-queries.ts` or `./src/server/server-mutators.ts`.
+
+An example use case for `server-queries.ts` is to check the user's role and, based on that role, add or remove conditions from the query.
+
+Example `server-queries.ts`:
+
+```ts
+import { queries as sharedQueries } from "@/shared/queries.js";
+import { db } from "../db";
+import { eq } from "drizzle-orm";
+
+export const queries = {
+  ...sharedQueries,
+  /**
+   * If you need to run different code on the server to fulfill a query you can do that here.
+   * This is useful for queries that are access controlled.
+   *
+   * Example:
+   */
+  async issues(sess: Session | null, open: boolean) {
+    if (sess?.user.id) {
+      const u = await db
+        .select({
+          role: user.role,
+        })
+        .from(user)
+        .where(eq(user.id, sess.user.id))
+        .limit(1);
+      isAdmin = u[0]?.role === "admin";
+    }
+
+    const q = sharedQueries.issues(sess, open);
+    if (!isAdmin) {
+      q = q.where("visibility", "!=", "private");
+    }
+    return q;
+  },
+};
+```
+
+Write permissions must be encoded into mutator definitions as well. E.g., if a user should only be able to modify their own data then the mutator body should check that the `owner` of a row matches the logged in user from the current session.
+
 ### Auth and Login
 
 Better-auth is used in the project. To log a user in with github you can do:
@@ -753,6 +817,7 @@ let items = [];
 
 // ✅ Required - Explicit type annotation
 let items: string[] = [];
+type User = Row<typeof schema.tables.user>;
 let users: User[] = [];
 let config: Array<{ name: string; enabled: boolean }> = [];
 ```
@@ -793,3 +858,9 @@ Type annotations may be omitted only when:
 - Apply this rule to ALL variable declarations in TypeScript code
 - Include type annotations even when TypeScript could infer the type
 - Prioritize code clarity and explicit intent over brevity
+
+### Other Rules
+
+1. **Never** change the location of the browser via `window.location = ...`
+2. Try not to repeat yourself when writing code. Factor common items into shared components or functions.
+3. Never use `alert()`. Use a web modal component instead.

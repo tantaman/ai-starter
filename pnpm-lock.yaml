@@ -41,6 +41,9 @@ importers:
       http-proxy-middleware:
         specifier: ^3.0.5
         version: 3.0.5
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.5
       postgres:
         specifier: ^3.4.7
         version: 3.4.7
@@ -1587,7 +1590,7 @@ packages:
     hasBin: true
 
   '@rocicorp/zero@file:../../mono/packages/zero/rocicorp-zero-0.22.2025072901.tgz':
-    resolution: {integrity: sha512-7Bwq2TjtgyLG1uXyuNa2gWfmN0YuXB7OVW7j2DtT2pl7nxX60N/lzN+2TWdsHVC627Rh0H6vb9bAGMK0ZNS1XQ==, tarball: file:../../mono/packages/zero/rocicorp-zero-0.22.2025072901.tgz}
+    resolution: {integrity: sha512-dnG/h295U1wqZG0+8VKt50vbJfupo13Izz9cxL9ngcrHDRwcZojPo7mMEf+VgFzwdXcbh4W8tqSb/gzSSLYSdA==, tarball: file:../../mono/packages/zero/rocicorp-zero-0.22.2025072901.tgz}
     version: 0.22.2025072901
     engines: {node: '>=22'}
     hasBin: true

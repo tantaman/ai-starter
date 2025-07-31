@@ -4,7 +4,7 @@ import { schema } from "@/shared/schema.js";
 import { PushProcessor } from "@rocicorp/zero/server";
 import { zeroPostgresJS } from "@rocicorp/zero/server/adapters/postgresjs";
 import { must } from "@/shared/util/must";
-import { createMutators } from "../../shared/mutators";
+import { createServerMutators } from "@/server/server-mutators.js";
 
 const processor = new PushProcessor(
   zeroPostgresJS(schema, must(process.env.PG_URL))
@@ -15,7 +15,7 @@ export const ServerRoute = createServerFileRoute("/api/mutate").methods({
     const session = await auth.api.getSession({
       headers: request.headers,
     });
-    const mutators = createMutators(session);
+    const mutators = createServerMutators(session);
     const result = await processor.process(mutators, request);
 
     return new Response(JSON.stringify(result), {
