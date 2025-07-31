@@ -71,6 +71,8 @@ A tailwindcss 4 theme is defined in `src/styles/theme.css`. This is the default 
 - cards (.card)
 - nav button (.nav-btn)
 
+It also contains semantic namings for the colors used so colors can be changed in one place to change the entire feel of the application.
+
 If you come up with new semantic UI elements, please add utility classes for those to the theme.
 
 Here is an example use of the pre-canned controls:
@@ -79,7 +81,7 @@ Here is an example use of the pre-canned controls:
 function ExampleHome() {
   return (
     <div className="flex h-screen">
-      <aside className="w-56 bg-white border border-black p-3 flex flex-col gap-2 rounded-xl m-3 shadow-[2px_2px_0_#00000020]">
+      <aside className="w-56 bg-[var(--color-base)] border border-black p-3 flex flex-col gap-2 rounded-xl m-3 shadow-[2px_2px_0_#00000020]">
         <div className="text-xl font-extrabold tracking-tight mb-3">
           AI Starter
         </div>
@@ -89,9 +91,7 @@ function ExampleHome() {
           <button className="nav-btn">Tracker</button>
           <button className="nav-btn">Store</button>
         </nav>
-        <div className="mt-auto text-xs text-neutral-400">
-          © 2025 AI Starter
-        </div>
+        <div className="mt-auto text-xs text-subtle">© 2025 AI Starter</div>
       </aside>
 
       <main className="flex-1 p-5 overflow-auto">
@@ -102,30 +102,30 @@ function ExampleHome() {
 
           <div className="card mb-6">
             <h2 className="text-lg font-semibold mb-2">Compact Card</h2>
-            <p className="text-neutral-700 text-sm">
+            <p className="text-body text-sm">
               A compact card layout for dense UIs with just enough padding and
               definition to stay legible and useful.
             </p>
             <div className="mt-4 flex gap-3">
-              <button className="btn btn-yellow">Create</button>
-              <button className="btn btn-white">Preview</button>
+              <button className="btn btn-primary">Create</button>
+              <button className="btn btn-default">Preview</button>
             </div>
           </div>
 
           <form className="card space-y-4">
             <div>
-              <label className="block mb-1 text-xs font-medium text-neutral-800">
+              <label className="block mb-1 text-xs font-medium text-heading">
                 Name
               </label>
               <input type="text" className="input" />
             </div>
             <div>
-              <label className="block mb-1 text-xs font-medium text-neutral-800">
+              <label className="block mb-1 text-xs font-medium text-heading">
                 Message
               </label>
               <textarea rows={3} className="input"></textarea>
             </div>
-            <button type="submit" className="btn btn-white">
+            <button type="submit" className="btn btn-default">
               Send
             </button>
           </form>
@@ -152,6 +152,11 @@ They are the following:
 - `gen-schema` - generates the zero schema from the drizzle schema
 
 `pnpm run dev` will start everything and the website can be visited at the following URL: http://localhost:8080/
+
+### Rules of thumb:
+
+- After changing the `drizzle schema` run `pnpm run db:push` and `pnpm run gen-schema`
+- If `pnpm run dev` is running in the background then any changes to routes will get picked up and generated into `routeTree.gen.ts`.
 
 ## Architecture
 
@@ -474,12 +479,50 @@ import { builder, Session } from "@/shared/schema.js";
 import { createQueriesWithContext } from "@rocicorp/zero";
 
 export const queries = createQueriesWithContext({
-  currentUser(sess: Session | undefined) {
+  currentUser(sess: Session | null) {
     return builder.user.where("id", "IS", sess?.user.id ?? null).one();
   },
 
-  issues(sess: Session | undefined, open: boolean) {
+  issues(sess: Session | null, open: boolean) {
     return builder.issue.where("open", "=", open);
+  },
+});
+```
+
+The first argument to query functions in this file is _always_ the session. All arguments to queries, after the first, must be JSON compatible values (string, boolean, number, null). Note that Zero represents dates as milliseconds since epoch. E.g., `const now = Date.now()` not `const now = new Date()`.
+
+If you need to return an empty query, because the user is not authorized to view the data, you can do:
+
+```ts
+return builder.user.where(({ or }) => or());
+```
+
+as that will always evaluate to false.
+
+It is good practice for the empty query to return the same shape of data as the normal query so we do not run into typing problems in the application code.
+
+**Example:**
+
+```ts
+// src/shared/queries.ts
+import { builder, Session } from "@/shared/schema.js";
+import { createQueriesWithContext } from "@rocicorp/zero";
+
+export const queries = createQueriesWithContext({
+  privateIssues(sess: Session | null, open: boolean) {
+    let q = builder.issue
+      .related("comments")
+      .related("assignee")
+      .related("creator");
+
+    if (sess == null) {
+      // ✅ do this:
+      return q.where(({ or }) => or());
+      // ❌ not this (the returned query has a different shape because it lacks related calls):
+      return builder.issue.where(({ or }) => or());
+    }
+
+    return q;
   },
 });
 ```
@@ -488,7 +531,9 @@ export const queries = createQueriesWithContext({
 
 Mutators are functions which can update state in Zero. Those state updates flow upstream to Postgres and update the system of record there.
 
-Place all mutator definitions in `src/shared/mutators.ts`.
+Place all mutator definitions in `src/shared/mutators.ts`. Mutators that are defined in `src/shared/mutators.ts` must be pure in that they cannot invoke sources of randomness or changing values. UUIDs must be passed in, for example, rather than generated in the mutator body.
+
+All arguments to mutators must be JSON compatible values (string, boolean, number, null). Note that Zero represents dates as milliseconds since epoch.
 
 **Example:**
 

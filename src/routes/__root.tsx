@@ -50,7 +50,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
       <head>
         <HeadContent />
       </head>
-      <body className="bg-gradient-to-br from-gray-50 via-white to-gray-100 text-neutral-800">
+      <body className="bg-gradient-to-br from-gray-50 via-white to-gray-100 text-heading">
         {children}
         <Scripts />
       </body>
