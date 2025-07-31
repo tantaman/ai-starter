@@ -160,6 +160,161 @@ export const schema = {
       },
       primaryKey: ["id"],
     },
+    comment: {
+      name: "comment",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "comment",
+            "id"
+          >,
+        },
+        content: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "comment",
+            "content"
+          >,
+        },
+        issueId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "comment",
+            "issueId"
+          >,
+          serverName: "issue_id",
+        },
+        authorId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "comment",
+            "authorId"
+          >,
+          serverName: "author_id",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "comment",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "comment",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
+    issue: {
+      name: "issue",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "id"
+          >,
+        },
+        title: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "title"
+          >,
+        },
+        description: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "description"
+          >,
+        },
+        status: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "status"
+          >,
+        },
+        priority: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "priority"
+          >,
+        },
+        reporterId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "reporterId"
+          >,
+          serverName: "reporter_id",
+        },
+        assigneeId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "assigneeId"
+          >,
+          serverName: "assignee_id",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
     session: {
       name: "session",
       columns: {
@@ -380,7 +535,78 @@ export const schema = {
       primaryKey: ["id"],
     },
   },
-  relationships: {},
+  relationships: {
+    comment: {
+      issue: [
+        {
+          sourceField: ["issueId"],
+          destField: ["id"],
+          destSchema: "issue",
+          cardinality: "one",
+        },
+      ],
+      author: [
+        {
+          sourceField: ["authorId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    issue: {
+      reporter: [
+        {
+          sourceField: ["reporterId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      assignee: [
+        {
+          sourceField: ["assigneeId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      comments: [
+        {
+          sourceField: ["id"],
+          destField: ["issueId"],
+          destSchema: "comment",
+          cardinality: "many",
+        },
+      ],
+    },
+    user: {
+      reportedIssues: [
+        {
+          sourceField: ["id"],
+          destField: ["reporterId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+      assignedIssues: [
+        {
+          sourceField: ["id"],
+          destField: ["assigneeId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+      comments: [
+        {
+          sourceField: ["id"],
+          destField: ["authorId"],
+          destSchema: "comment",
+          cardinality: "many",
+        },
+      ],
+    },
+  },
 } as const;
 
 /**

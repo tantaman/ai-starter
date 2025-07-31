@@ -11,16 +11,34 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as CreateIssueRouteImport } from './routes/create-issue'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as IssueIdRouteImport } from './routes/issue/$id'
 import { ServerRoute as ApiQueryServerRouteImport } from './routes/api/query'
 import { ServerRoute as ApiMutateServerRouteImport } from './routes/api/mutate'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateIssueRoute = CreateIssueRouteImport.update({
+  id: '/create-issue',
+  path: '/create-issue',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IssueIdRoute = IssueIdRouteImport.update({
+  id: '/issue/$id',
+  path: '/issue/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiQueryServerRoute = ApiQueryServerRouteImport.update({
@@ -41,24 +59,36 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/create-issue': typeof CreateIssueRoute
+  '/login': typeof LoginRoute
+  '/issue/$id': typeof IssueIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/create-issue': typeof CreateIssueRoute
+  '/login': typeof LoginRoute
+  '/issue/$id': typeof IssueIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/create-issue': typeof CreateIssueRoute
+  '/login': typeof LoginRoute
+  '/issue/$id': typeof IssueIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/create-issue' | '/login' | '/issue/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/create-issue' | '/login' | '/issue/$id'
+  id: '__root__' | '/' | '/create-issue' | '/login' | '/issue/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CreateIssueRoute: typeof CreateIssueRoute
+  LoginRoute: typeof LoginRoute
+  IssueIdRoute: typeof IssueIdRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/mutate': typeof ApiMutateServerRoute
@@ -92,11 +122,32 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create-issue': {
+      id: '/create-issue'
+      path: '/create-issue'
+      fullPath: '/create-issue'
+      preLoaderRoute: typeof CreateIssueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/issue/$id': {
+      id: '/issue/$id'
+      path: '/issue/$id'
+      fullPath: '/issue/$id'
+      preLoaderRoute: typeof IssueIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -129,6 +180,9 @@ declare module '@tanstack/react-start/server' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CreateIssueRoute: CreateIssueRoute,
+  LoginRoute: LoginRoute,
+  IssueIdRoute: IssueIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

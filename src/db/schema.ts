@@ -1,4 +1,8 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+
+export const issueStatusEnum = pgEnum('issue_status', ['open', 'closed', 'in_progress']);
+export const issuePriorityEnum = pgEnum('issue_priority', ['low', 'medium', 'high', 'critical']);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -59,3 +63,71 @@ export const verification = pgTable("verification", {
     () => /* @__PURE__ */ new Date(),
   ),
 });
+
+export const issue = pgTable("issue", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: issueStatusEnum("status").$defaultFn(() => 'open').notNull(),
+  priority: issuePriorityEnum("priority").$defaultFn(() => 'medium').notNull(),
+  reporterId: text("reporter_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  assigneeId: text("assignee_id")
+    .references(() => user.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const comment = pgTable("comment", {
+  id: text("id").primaryKey(),
+  content: text("content").notNull(),
+  issueId: text("issue_id")
+    .notNull()
+    .references(() => issue.id, { onDelete: "cascade" }),
+  authorId: text("author_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+// Relations
+export const userRelations = relations(user, ({ many }) => ({
+  reportedIssues: many(issue, { relationName: "reporter" }),
+  assignedIssues: many(issue, { relationName: "assignee" }),
+  comments: many(comment),
+}));
+
+export const issueRelations = relations(issue, ({ one, many }) => ({
+  reporter: one(user, {
+    fields: [issue.reporterId],
+    references: [user.id],
+    relationName: "reporter",
+  }),
+  assignee: one(user, {
+    fields: [issue.assigneeId],
+    references: [user.id],
+    relationName: "assignee",
+  }),
+  comments: many(comment),
+}));
+
+export const commentRelations = relations(comment, ({ one }) => ({
+  issue: one(issue, {
+    fields: [comment.issueId],
+    references: [issue.id],
+  }),
+  author: one(user, {
+    fields: [comment.authorId],
+    references: [user.id],
+  }),
+}));
