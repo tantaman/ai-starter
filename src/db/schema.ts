@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -59,3 +60,89 @@ export const verification = pgTable("verification", {
     () => /* @__PURE__ */ new Date(),
   ),
 });
+
+export const channel = pgTable("channel", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  isPrivate: boolean("is_private")
+    .$defaultFn(() => false)
+    .notNull(),
+  createdBy: text("created_by")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export const message = pgTable("message", {
+  id: text("id").primaryKey(),
+  content: text("content").notNull(),
+  channelId: text("channel_id")
+    .notNull()
+    .references(() => channel.id, { onDelete: "cascade" }),
+  authorId: text("author_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+export const channelMember = pgTable("channel_member", {
+  id: text("id").primaryKey(),
+  channelId: text("channel_id")
+    .notNull()
+    .references(() => channel.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  joinedAt: timestamp("joined_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
+// Relations
+export const userRelations = relations(user, ({ many }) => ({
+  createdChannels: many(channel),
+  messages: many(message),
+  channelMemberships: many(channelMember),
+}));
+
+export const channelRelations = relations(channel, ({ one, many }) => ({
+  creator: one(user, {
+    fields: [channel.createdBy],
+    references: [user.id],
+  }),
+  messages: many(message),
+  members: many(channelMember),
+}));
+
+export const messageRelations = relations(message, ({ one }) => ({
+  channel: one(channel, {
+    fields: [message.channelId],
+    references: [channel.id],
+  }),
+  author: one(user, {
+    fields: [message.authorId],
+    references: [user.id],
+  }),
+}));
+
+export const channelMemberRelations = relations(channelMember, ({ one }) => ({
+  channel: one(channel, {
+    fields: [channelMember.channelId],
+    references: [channel.id],
+  }),
+  user: one(user, {
+    fields: [channelMember.userId],
+    references: [user.id],
+  }),
+}));

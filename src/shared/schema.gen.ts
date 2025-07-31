@@ -160,6 +160,189 @@ export const schema = {
       },
       primaryKey: ["id"],
     },
+    channel: {
+      name: "channel",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channel",
+            "id"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channel",
+            "name"
+          >,
+        },
+        description: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channel",
+            "description"
+          >,
+        },
+        isPrivate: {
+          type: "boolean",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channel",
+            "isPrivate"
+          >,
+          serverName: "is_private",
+        },
+        createdBy: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channel",
+            "createdBy"
+          >,
+          serverName: "created_by",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channel",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channel",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
+    channelMember: {
+      name: "channelMember",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channelMember",
+            "id"
+          >,
+        },
+        channelId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channelMember",
+            "channelId"
+          >,
+          serverName: "channel_id",
+        },
+        userId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channelMember",
+            "userId"
+          >,
+          serverName: "user_id",
+        },
+        joinedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "channelMember",
+            "joinedAt"
+          >,
+          serverName: "joined_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "channel_member",
+    },
+    message: {
+      name: "message",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "message",
+            "id"
+          >,
+        },
+        content: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "message",
+            "content"
+          >,
+        },
+        channelId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "message",
+            "channelId"
+          >,
+          serverName: "channel_id",
+        },
+        authorId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "message",
+            "authorId"
+          >,
+          serverName: "author_id",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "message",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "message",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
     session: {
       name: "session",
       columns: {
@@ -380,7 +563,96 @@ export const schema = {
       primaryKey: ["id"],
     },
   },
-  relationships: {},
+  relationships: {
+    channelMember: {
+      channel: [
+        {
+          sourceField: ["channelId"],
+          destField: ["id"],
+          destSchema: "channel",
+          cardinality: "one",
+        },
+      ],
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    channel: {
+      creator: [
+        {
+          sourceField: ["createdBy"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      messages: [
+        {
+          sourceField: ["id"],
+          destField: ["channelId"],
+          destSchema: "message",
+          cardinality: "many",
+        },
+      ],
+      members: [
+        {
+          sourceField: ["id"],
+          destField: ["channelId"],
+          destSchema: "channelMember",
+          cardinality: "many",
+        },
+      ],
+    },
+    message: {
+      channel: [
+        {
+          sourceField: ["channelId"],
+          destField: ["id"],
+          destSchema: "channel",
+          cardinality: "one",
+        },
+      ],
+      author: [
+        {
+          sourceField: ["authorId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    user: {
+      createdChannels: [
+        {
+          sourceField: ["id"],
+          destField: ["createdBy"],
+          destSchema: "channel",
+          cardinality: "many",
+        },
+      ],
+      messages: [
+        {
+          sourceField: ["id"],
+          destField: ["authorId"],
+          destSchema: "message",
+          cardinality: "many",
+        },
+      ],
+      channelMemberships: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "channelMember",
+          cardinality: "many",
+        },
+      ],
+    },
+  },
 } as const;
 
 /**
