@@ -1,12 +1,46 @@
 /* src/styles/theme.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 @import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @theme {
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --color-surface: #f7f7f7;
+  --color-content: #1f2937;
+  --color-outline: #000000;
+  --color-accent: #fde047;
+  --color-accent-hover: #facc15;
+  --color-base: #ffffff;
+  --color-muted: #f3f4f6;
+  --color-muted-border: #e5e7eb;
+  --color-muted-bg: #d1d5db;
+  --color-heading: #1f2937;
+  --color-body: #374151;
+  --color-muted-text: #6b7280;
+  --color-subtle: #9ca3af;
+  --color-error: #ef4444;
+}
+
+.text-heading {
+  color: var(--color-heading);
+}
+
+.text-body {
+  color: var(--color-body);
+}
+
+.text-muted {
+  color: var(--color-muted-text);
+}
+
+.text-subtle {
+  color: var(--color-subtle);
+}
+
+.text-error {
+  color: var(--color-error);
 }
 
 html {
@@ -18,12 +52,20 @@ html {
   cursor: pointer;
 }
 
-.btn-yellow {
-  @apply bg-yellow-200 hover:bg-yellow-300;
+.btn-primary {
+  background-color: var(--color-accent);
 }
 
-.btn-white {
-  @apply bg-white hover:bg-neutral-100;
+.btn-primary:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.btn-default {
+  background-color: var(--color-base);
+}
+
+.btn-default:hover {
+  background-color: var(--color-muted);
 }
 
 .input {
@@ -35,6 +77,7 @@ html {
 }
 
 .nav-btn {
-  @apply text-left px-2 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-100 transition;
+  @apply text-left px-2 py-2 text-sm font-medium hover:bg-[var(--color-muted)] transition;
   cursor: pointer;
+  color: var(--color-heading);
 }
