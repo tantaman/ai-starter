@@ -33,7 +33,7 @@ These frameworks have already been configured for you and a project scaffolding 
 |   |   |-- api/ # Place API routes here
 |   |   |-- index.tsx # Main / home page
 |   |-- server/ # Code that only runs server side
-|   |-- shared/ # Code that is used by both client and serer
+|   |-- shared/ # Code that is used by both client and server
 |   |   |-- queries/ # Zero query definitions
 |   |   |-- mutators/ # Zero mutator definitions
 |   |   |-- schema.ts # The Zero schema. Used to build ZQL queries. Generated from the Drizzle schema.
