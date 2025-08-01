@@ -16,7 +16,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push --force",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
@@ -50,6 +51,7 @@
     "drizzle-kit": "^0.31.4",
     "drizzle-zero": "^0.13.1",
     "tsx": "^4.20.3",
+    "vitest": "^1.5.0",
     "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
     "wait-on": "^8.0.4"
