@@ -64,9 +64,10 @@ export function LoginForm() {
           <label className="block mb-1 text-xs font-medium text-neutral-800">
             Email
           </label>
-          <input type="email" className="input" placeholder="email" />
+          <input type="email" name="email" className="input" placeholder="email" />
           <input
             type="password"
+            name="password"
             className="input mt-2"
             placeholder="password"
           />
