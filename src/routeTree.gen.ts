@@ -11,17 +11,29 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BattleshipRouteImport } from './routes/battleship'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BattleshipRoomIdRouteImport } from './routes/battleship.$roomId'
 import { ServerRoute as ApiQueryServerRouteImport } from './routes/api/query'
 import { ServerRoute as ApiMutateServerRouteImport } from './routes/api/mutate'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
+const BattleshipRoute = BattleshipRouteImport.update({
+  id: '/battleship',
+  path: '/battleship',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BattleshipRoomIdRoute = BattleshipRoomIdRouteImport.update({
+  id: '/$roomId',
+  path: '/$roomId',
+  getParentRoute: () => BattleshipRoute,
 } as any)
 const ApiQueryServerRoute = ApiQueryServerRouteImport.update({
   id: '/api/query',
@@ -41,24 +53,31 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/battleship': typeof BattleshipRouteWithChildren
+  '/battleship/$roomId': typeof BattleshipRoomIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/battleship': typeof BattleshipRouteWithChildren
+  '/battleship/$roomId': typeof BattleshipRoomIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/battleship': typeof BattleshipRouteWithChildren
+  '/battleship/$roomId': typeof BattleshipRoomIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/battleship' | '/battleship/$roomId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/battleship' | '/battleship/$roomId'
+  id: '__root__' | '/' | '/battleship' | '/battleship/$roomId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BattleshipRoute: typeof BattleshipRouteWithChildren
 }
 export interface FileServerRoutesByFullPath {
   '/api/mutate': typeof ApiMutateServerRoute
@@ -92,12 +111,26 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/battleship': {
+      id: '/battleship'
+      path: '/battleship'
+      fullPath: '/battleship'
+      preLoaderRoute: typeof BattleshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/battleship/$roomId': {
+      id: '/battleship/$roomId'
+      path: '/$roomId'
+      fullPath: '/battleship/$roomId'
+      preLoaderRoute: typeof BattleshipRoomIdRouteImport
+      parentRoute: typeof BattleshipRoute
     }
   }
 }
@@ -127,8 +160,21 @@ declare module '@tanstack/react-start/server' {
   }
 }
 
+interface BattleshipRouteChildren {
+  BattleshipRoomIdRoute: typeof BattleshipRoomIdRoute
+}
+
+const BattleshipRouteChildren: BattleshipRouteChildren = {
+  BattleshipRoomIdRoute: BattleshipRoomIdRoute,
+}
+
+const BattleshipRouteWithChildren = BattleshipRoute._addFileChildren(
+  BattleshipRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BattleshipRoute: BattleshipRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

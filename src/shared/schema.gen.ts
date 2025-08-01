@@ -160,6 +160,344 @@ export const schema = {
       },
       primaryKey: ["id"],
     },
+    battleshipGuess: {
+      name: "battleshipGuess",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "id"
+          >,
+        },
+        roomId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "roomId"
+          >,
+          serverName: "room_id",
+        },
+        attackerId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "attackerId"
+          >,
+          serverName: "attacker_id",
+        },
+        targetId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "targetId"
+          >,
+          serverName: "target_id",
+        },
+        x: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "x"
+          >,
+        },
+        y: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "y"
+          >,
+        },
+        result: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "result"
+          >,
+        },
+        hitShipId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "hitShipId"
+          >,
+          serverName: "hit_ship_id",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipGuess",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "battleship_guess",
+    },
+    battleshipPlayer: {
+      name: "battleshipPlayer",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipPlayer",
+            "id"
+          >,
+        },
+        roomId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipPlayer",
+            "roomId"
+          >,
+          serverName: "room_id",
+        },
+        userId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipPlayer",
+            "userId"
+          >,
+          serverName: "user_id",
+        },
+        playerNumber: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipPlayer",
+            "playerNumber"
+          >,
+          serverName: "player_number",
+        },
+        ready: {
+          type: "boolean",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipPlayer",
+            "ready"
+          >,
+        },
+        shipsPlaced: {
+          type: "boolean",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipPlayer",
+            "shipsPlaced"
+          >,
+          serverName: "ships_placed",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipPlayer",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "battleship_player",
+    },
+    battleshipRoom: {
+      name: "battleshipRoom",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipRoom",
+            "id"
+          >,
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipRoom",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipRoom",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+        status: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipRoom",
+            "status"
+          >,
+        },
+        currentTurn: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipRoom",
+            "currentTurn"
+          >,
+          serverName: "current_turn",
+        },
+        winnerId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipRoom",
+            "winnerId"
+          >,
+          serverName: "winner_id",
+        },
+        createdById: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipRoom",
+            "createdById"
+          >,
+          serverName: "created_by_id",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "battleship_room",
+    },
+    battleshipShip: {
+      name: "battleshipShip",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "id"
+          >,
+        },
+        playerId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "playerId"
+          >,
+          serverName: "player_id",
+        },
+        shipType: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "shipType"
+          >,
+          serverName: "ship_type",
+        },
+        startX: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "startX"
+          >,
+          serverName: "start_x",
+        },
+        startY: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "startY"
+          >,
+          serverName: "start_y",
+        },
+        endX: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "endX"
+          >,
+          serverName: "end_x",
+        },
+        endY: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "endY"
+          >,
+          serverName: "end_y",
+        },
+        sunk: {
+          type: "boolean",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "sunk"
+          >,
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "battleshipShip",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "battleship_ship",
+    },
     session: {
       name: "session",
       columns: {
@@ -380,7 +718,216 @@ export const schema = {
       primaryKey: ["id"],
     },
   },
-  relationships: {},
+  relationships: {
+    account: {
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    battleshipGuess: {
+      room: [
+        {
+          sourceField: ["roomId"],
+          destField: ["id"],
+          destSchema: "battleshipRoom",
+          cardinality: "one",
+        },
+      ],
+      attacker: [
+        {
+          sourceField: ["attackerId"],
+          destField: ["id"],
+          destSchema: "battleshipPlayer",
+          cardinality: "one",
+        },
+      ],
+      target: [
+        {
+          sourceField: ["targetId"],
+          destField: ["id"],
+          destSchema: "battleshipPlayer",
+          cardinality: "one",
+        },
+      ],
+      hitShip: [
+        {
+          sourceField: ["hitShipId"],
+          destField: ["id"],
+          destSchema: "battleshipShip",
+          cardinality: "one",
+        },
+      ],
+    },
+    battleshipPlayer: {
+      room: [
+        {
+          sourceField: ["roomId"],
+          destField: ["id"],
+          destSchema: "battleshipRoom",
+          cardinality: "one",
+        },
+      ],
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      ships: [
+        {
+          sourceField: ["id"],
+          destField: ["playerId"],
+          destSchema: "battleshipShip",
+          cardinality: "many",
+        },
+      ],
+      attacksMade: [
+        {
+          sourceField: ["id"],
+          destField: ["attackerId"],
+          destSchema: "battleshipGuess",
+          cardinality: "many",
+        },
+      ],
+      attacksReceived: [
+        {
+          sourceField: ["id"],
+          destField: ["targetId"],
+          destSchema: "battleshipGuess",
+          cardinality: "many",
+        },
+      ],
+    },
+    battleshipRoom: {
+      creator: [
+        {
+          sourceField: ["createdById"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      winner: [
+        {
+          sourceField: ["winnerId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      players: [
+        {
+          sourceField: ["id"],
+          destField: ["roomId"],
+          destSchema: "battleshipPlayer",
+          cardinality: "many",
+        },
+      ],
+      guesses: [
+        {
+          sourceField: ["id"],
+          destField: ["roomId"],
+          destSchema: "battleshipGuess",
+          cardinality: "many",
+        },
+      ],
+    },
+    battleshipShip: {
+      player: [
+        {
+          sourceField: ["playerId"],
+          destField: ["id"],
+          destSchema: "battleshipPlayer",
+          cardinality: "one",
+        },
+      ],
+      hits: [
+        {
+          sourceField: ["id"],
+          destField: ["hitShipId"],
+          destSchema: "battleshipGuess",
+          cardinality: "many",
+        },
+      ],
+    },
+    session: {
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    user: {
+      sessions: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "session",
+          cardinality: "many",
+        },
+      ],
+      accounts: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "account",
+          cardinality: "many",
+        },
+      ],
+      verifications: [
+        {
+          sourceField: ["email"],
+          destField: ["identifier"],
+          destSchema: "verification",
+          cardinality: "many",
+        },
+      ],
+      createdRooms: [
+        {
+          sourceField: ["id"],
+          destField: ["createdById"],
+          destSchema: "battleshipRoom",
+          cardinality: "many",
+        },
+      ],
+      wonRooms: [
+        {
+          sourceField: ["id"],
+          destField: ["winnerId"],
+          destSchema: "battleshipRoom",
+          cardinality: "many",
+        },
+      ],
+      playerEntries: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "battleshipPlayer",
+          cardinality: "many",
+        },
+      ],
+    },
+    verification: {
+      user: [
+        {
+          sourceField: ["identifier"],
+          destField: ["email"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+  },
 } as const;
 
 /**
