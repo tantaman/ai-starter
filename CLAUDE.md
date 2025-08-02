@@ -495,7 +495,7 @@ export const queries = createQueriesWithContext({
     // IMPORTANT! The query is built _before_ checking the session
     // and modified if the user is not logged in. This ensures query shape stays
     // the same regardless of login state.
-    return sess ? q : q.where(({or}) => or())
+    return sess ? q : q.where(alwaysFalse)
   }
 });
 ```
@@ -505,7 +505,7 @@ The first argument to query functions in this file is _always_ the session. All 
 If you need to return an empty query, because the user is not authorized to view the data, you can do:
 
 ```ts
-return builder.user.where(({ or }) => or());
+return builder.user.where(alwaysFalse);
 ```
 
 as that will always evaluate to false.
@@ -528,7 +528,7 @@ export const queries = createQueriesWithContext({
 
     if (sess == null) {
       // ✅ do this:
-      return q.where(({ or }) => or());
+      return q.where(alwaysFalse);
     }
 
     return q;

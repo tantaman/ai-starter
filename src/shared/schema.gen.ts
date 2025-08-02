@@ -380,7 +380,46 @@ export const schema = {
       primaryKey: ["id"],
     },
   },
-  relationships: {},
+  relationships: {
+    account: {
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    session: {
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    user: {
+      sessions: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "session",
+          cardinality: "many",
+        },
+      ],
+      accounts: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "account",
+          cardinality: "many",
+        },
+      ],
+    },
+  },
 } as const;
 
 /**
