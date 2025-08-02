@@ -11,16 +11,34 @@
 import { createServerRootRoute } from '@tanstack/react-start/server'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TicTacToeRouteImport } from './routes/tic-tac-toe'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InviteInviteCodeRouteImport } from './routes/invite.$inviteCode'
+import { Route as GameGameIdRouteImport } from './routes/game.$gameId'
 import { ServerRoute as ApiQueryServerRouteImport } from './routes/api/query'
 import { ServerRoute as ApiMutateServerRouteImport } from './routes/api/mutate'
 import { ServerRoute as ApiAuthSplatServerRouteImport } from './routes/api/auth/$'
 
 const rootServerRouteImport = createServerRootRoute()
 
+const TicTacToeRoute = TicTacToeRouteImport.update({
+  id: '/tic-tac-toe',
+  path: '/tic-tac-toe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteInviteCodeRoute = InviteInviteCodeRouteImport.update({
+  id: '/invite/$inviteCode',
+  path: '/invite/$inviteCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GameGameIdRoute = GameGameIdRouteImport.update({
+  id: '/game/$gameId',
+  path: '/game/$gameId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiQueryServerRoute = ApiQueryServerRouteImport.update({
@@ -41,24 +59,41 @@ const ApiAuthSplatServerRoute = ApiAuthSplatServerRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/tic-tac-toe': typeof TicTacToeRoute
+  '/game/$gameId': typeof GameGameIdRoute
+  '/invite/$inviteCode': typeof InviteInviteCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/tic-tac-toe': typeof TicTacToeRoute
+  '/game/$gameId': typeof GameGameIdRoute
+  '/invite/$inviteCode': typeof InviteInviteCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/tic-tac-toe': typeof TicTacToeRoute
+  '/game/$gameId': typeof GameGameIdRoute
+  '/invite/$inviteCode': typeof InviteInviteCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/tic-tac-toe' | '/game/$gameId' | '/invite/$inviteCode'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/tic-tac-toe' | '/game/$gameId' | '/invite/$inviteCode'
+  id:
+    | '__root__'
+    | '/'
+    | '/tic-tac-toe'
+    | '/game/$gameId'
+    | '/invite/$inviteCode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TicTacToeRoute: typeof TicTacToeRoute
+  GameGameIdRoute: typeof GameGameIdRoute
+  InviteInviteCodeRoute: typeof InviteInviteCodeRoute
 }
 export interface FileServerRoutesByFullPath {
   '/api/mutate': typeof ApiMutateServerRoute
@@ -92,11 +127,32 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tic-tac-toe': {
+      id: '/tic-tac-toe'
+      path: '/tic-tac-toe'
+      fullPath: '/tic-tac-toe'
+      preLoaderRoute: typeof TicTacToeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$inviteCode': {
+      id: '/invite/$inviteCode'
+      path: '/invite/$inviteCode'
+      fullPath: '/invite/$inviteCode'
+      preLoaderRoute: typeof InviteInviteCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/game/$gameId': {
+      id: '/game/$gameId'
+      path: '/game/$gameId'
+      fullPath: '/game/$gameId'
+      preLoaderRoute: typeof GameGameIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -129,6 +185,9 @@ declare module '@tanstack/react-start/server' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TicTacToeRoute: TicTacToeRoute,
+  GameGameIdRoute: GameGameIdRoute,
+  InviteInviteCodeRoute: InviteInviteCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
