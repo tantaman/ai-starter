@@ -68,10 +68,12 @@ export function MainContent({ teamId, currentView, selectedIssueId, onSelectIssu
   // If an issue is selected, show the detail view
   if (selectedIssueId && selectedIssue) {
     return (
-      <IssueDetail 
-        issue={selectedIssue}
-        onClose={() => onSelectIssue(null)}
-      />
+      <div className="flex-1 flex flex-col">
+        <IssueDetail 
+          issue={selectedIssue}
+          onClose={() => onSelectIssue(null)}
+        />
+      </div>
     );
   }
 
@@ -224,60 +226,62 @@ export function MainContent({ teamId, currentView, selectedIssueId, onSelectIssu
           </div>
         ) : (
           // Board View
-          <div className="h-full overflow-auto p-6">
-            <div className="flex space-x-6 h-full">
-              {teamStatuses?.map(status => (
-                <div key={status.id} className="flex-1 min-w-80">
-                  <div className="bg-neutral-50 rounded-lg p-4 h-full">
-                    <h3 className="font-medium text-neutral-900 mb-4 flex items-center justify-between">
-                      {status.name}
-                      <span className="text-xs text-neutral-500">
-                        {currentIssues.filter(issue => issue.statusId === status.id).length}
-                      </span>
-                    </h3>
-                    <div className="space-y-3">
-                      {currentIssues
-                        .filter(issue => issue.statusId === status.id)
-                        .map(issue => (
-                          <div
-                            key={issue.id}
-                            className="bg-white p-3 rounded-lg border border-neutral-200 cursor-pointer hover:border-neutral-300 transition-colors"
-                            onClick={() => onSelectIssue(issue.id)}
-                          >
-                            <div className="flex items-center space-x-2 mb-2">
-                              <div className={`w-2 h-2 rounded-full ${
-                                issue.priority?.value >= 3 ? "bg-red-500" :
-                                issue.priority?.value >= 2 ? "bg-orange-500" :
-                                issue.priority?.value >= 1 ? "bg-yellow-500" :
-                                "bg-gray-400"
-                              }`} />
-                              <span className="text-xs text-neutral-500 font-mono">
-                                {issue.team?.identifier}-{issue.number}
-                              </span>
-                            </div>
-                            <p className="text-sm font-medium text-neutral-900 mb-2">
-                              {issue.title}
-                            </p>
-                            {issue.assignee && (
-                              <div className="flex items-center space-x-2">
-                                {issue.assignee.image && (
-                                  <img 
-                                    src={issue.assignee.image} 
-                                    alt={issue.assignee.name} 
-                                    className="w-5 h-5 rounded-full"
-                                  />
-                                )}
-                                <span className="text-xs text-neutral-600">
-                                  {issue.assignee.name}
+          <div className="h-full p-6">
+            <div className="h-full overflow-x-auto">
+              <div className="flex gap-4 h-full" style={{ minWidth: `${(teamStatuses?.length || 0) * 280 + (teamStatuses?.length || 0) * 16}px` }}>
+                {teamStatuses?.map(status => (
+                  <div key={status.id} className="flex-shrink-0" style={{ width: '280px' }}>
+                    <div className="bg-neutral-50 rounded-lg p-4 h-full flex flex-col">
+                      <h3 className="font-medium text-neutral-900 mb-4 flex items-center justify-between">
+                        {status.name}
+                        <span className="text-xs text-neutral-500">
+                          {currentIssues.filter(issue => issue.statusId === status.id).length}
+                        </span>
+                      </h3>
+                      <div className="flex-1 overflow-y-auto space-y-3">
+                        {currentIssues
+                          .filter(issue => issue.statusId === status.id)
+                          .map(issue => (
+                            <div
+                              key={issue.id}
+                              className="bg-white p-3 rounded-lg border border-neutral-200 cursor-pointer hover:border-neutral-300 transition-colors"
+                              onClick={() => onSelectIssue(issue.id)}
+                            >
+                              <div className="flex items-center space-x-2 mb-2">
+                                <div className={`w-2 h-2 rounded-full ${
+                                  issue.priority?.value >= 3 ? "bg-red-500" :
+                                  issue.priority?.value >= 2 ? "bg-orange-500" :
+                                  issue.priority?.value >= 1 ? "bg-yellow-500" :
+                                  "bg-gray-400"
+                                }`} />
+                                <span className="text-xs text-neutral-500 font-mono">
+                                  {issue.team?.identifier}-{issue.number}
                                 </span>
                               </div>
-                            )}
-                          </div>
-                        ))}
+                              <p className="text-sm font-medium text-neutral-900 mb-2">
+                                {issue.title}
+                              </p>
+                              {issue.assignee && (
+                                <div className="flex items-center space-x-2">
+                                  {issue.assignee.image && (
+                                    <img 
+                                      src={issue.assignee.image} 
+                                      alt={issue.assignee.name} 
+                                      className="w-5 h-5 rounded-full"
+                                    />
+                                  )}
+                                  <span className="text-xs text-neutral-600">
+                                    {issue.assignee.name}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         )}

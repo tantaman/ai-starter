@@ -102,8 +102,8 @@ export function IssueDetail({ issue, onClose }: IssueDetailProps) {
   return (
     <div className="flex h-full">
       {/* Main content */}
-      <div className="flex-1 p-6">
-        <div className="max-w-4xl mx-auto">
+      <div className="flex-1 p-6 overflow-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Issue header */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
