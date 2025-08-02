@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSession } from "@/client/auth.js";
 import { queries } from "@/shared/queries.js";
-import { useQuery } from "@/ui/use-zero.js";
+import { useQuery, useZero } from "@/ui/use-zero.js";
 import { IssueDetail } from "./issue-detail.js";
 import { CreateIssueModal } from "./create-issue-modal.js";
 
@@ -14,6 +14,7 @@ interface MainContentProps {
 
 export function MainContent({ teamId, currentView, selectedIssueId, onSelectIssue }: MainContentProps) {
   const { data: session } = useSession();
+  const zero = useZero();
   const [teamIssues] = useQuery(queries.teamIssues(session, teamId, null, null, null));
   const [userAssignedIssues] = useQuery(queries.userAssignedIssues(session, teamId));
   const [userCreatedIssues] = useQuery(queries.userCreatedIssues(session, teamId));
@@ -23,6 +24,8 @@ export function MainContent({ teamId, currentView, selectedIssueId, onSelectIssu
   const [selectedIssue] = useQuery(selectedIssueId ? queries.issueById(session, selectedIssueId) : queries.issueById(null, ""));
   const [displayView, setDisplayView] = useState<"list" | "board">("list");
   const [showCreateIssue, setShowCreateIssue] = useState<boolean>(false);
+  const [draggedIssue, setDraggedIssue] = useState<any>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
 
   // Get issues based on current view
   const getIssuesForCurrentView = (): any[] => {
@@ -62,6 +65,53 @@ export function MainContent({ teamId, currentView, selectedIssueId, onSelectIssu
       case "projects": return "Projects";
       case "all":
       default: return "All Issues";
+    }
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, issue: any): void => {
+    setDraggedIssue(issue);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
+  };
+
+  const handleDragEnd = (): void => {
+    setDraggedIssue(null);
+    setDragOverColumn(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDragEnter = (statusId: string): void => {
+    setDragOverColumn(statusId);
+  };
+
+  const handleDragLeave = (): void => {
+    setDragOverColumn(null);
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetStatusId: string): Promise<void> => {
+    e.preventDefault();
+    
+    if (!draggedIssue || draggedIssue.statusId === targetStatusId) {
+      setDraggedIssue(null);
+      setDragOverColumn(null);
+      return;
+    }
+
+    try {
+      await zero.mutate.updateIssue({
+        id: draggedIssue.id,
+        statusId: targetStatusId,
+      });
+    } catch (err) {
+      console.error("Failed to update issue status:", err);
+    } finally {
+      setDraggedIssue(null);
+      setDragOverColumn(null);
     }
   };
 
@@ -230,8 +280,20 @@ export function MainContent({ teamId, currentView, selectedIssueId, onSelectIssu
             <div className="h-full overflow-x-auto">
               <div className="flex gap-4 h-full" style={{ minWidth: `${(teamStatuses?.length || 0) * 280 + (teamStatuses?.length || 0) * 16}px` }}>
                 {teamStatuses?.map(status => (
-                  <div key={status.id} className="flex-shrink-0" style={{ width: '280px' }}>
-                    <div className="bg-neutral-50 rounded-lg p-4 h-full flex flex-col">
+                  <div 
+                    key={status.id} 
+                    className="flex-shrink-0" 
+                    style={{ width: '280px' }}
+                    onDragOver={handleDragOver}
+                    onDragEnter={() => handleDragEnter(status.id)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, status.id)}
+                  >
+                    <div className={`rounded-lg p-4 h-full flex flex-col transition-colors ${
+                      dragOverColumn === status.id 
+                        ? "bg-blue-50 border-2 border-blue-300 border-dashed" 
+                        : "bg-neutral-50"
+                    }`}>
                       <h3 className="font-medium text-neutral-900 mb-4 flex items-center justify-between">
                         {status.name}
                         <span className="text-xs text-neutral-500">
@@ -244,8 +306,20 @@ export function MainContent({ teamId, currentView, selectedIssueId, onSelectIssu
                           .map(issue => (
                             <div
                               key={issue.id}
-                              className="bg-white p-3 rounded-lg border border-neutral-200 cursor-pointer hover:border-neutral-300 transition-colors"
-                              onClick={() => onSelectIssue(issue.id)}
+                              draggable
+                              className={`bg-white p-3 rounded-lg border cursor-move hover:border-neutral-300 transition-all select-none ${
+                                draggedIssue?.id === issue.id 
+                                  ? "opacity-50 border-blue-300" 
+                                  : "border-neutral-200"
+                              }`}
+                              onDragStart={(e) => handleDragStart(e, issue)}
+                              onDragEnd={handleDragEnd}
+                              onClick={(e) => {
+                                // Only open detail if not dragging
+                                if (!draggedIssue) {
+                                  onSelectIssue(issue.id);
+                                }
+                              }}
                             >
                               <div className="flex items-center space-x-2 mb-2">
                                 <div className={`w-2 h-2 rounded-full ${
