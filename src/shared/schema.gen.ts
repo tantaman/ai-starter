@@ -268,6 +268,26 @@ export const schema = {
             "estimate"
           >,
         },
+        startDate: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "startDate"
+          >,
+          serverName: "start_date",
+        },
+        dueDate: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "dueDate"
+          >,
+          serverName: "due_date",
+        },
         createdAt: {
           type: "number",
           optional: false,

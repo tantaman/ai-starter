@@ -168,6 +168,8 @@ export const issue = pgTable("issue", {
   assigneeId: text("assignee_id")
     .references(() => user.id, { onDelete: "set null" }),
   estimate: integer("estimate"),
+  startDate: timestamp("start_date"),
+  dueDate: timestamp("due_date"),
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),

@@ -168,7 +168,7 @@ export function createMutators(sess: Session | null) {
     },
 
     // Issue mutators
-    async createIssue(tx, { id, title, description, statusId, priorityId, projectId, teamId, assigneeId, estimate }: {
+    async createIssue(tx, { id, title, description, statusId, priorityId, projectId, teamId, assigneeId, estimate, startDate, dueDate }: {
       id: string;
       title: string;
       description?: string;
@@ -178,6 +178,8 @@ export function createMutators(sess: Session | null) {
       teamId: string;
       assigneeId?: string;
       estimate?: number;
+      startDate?: number;
+      dueDate?: number;
     }) {
       if (!sess) throw new Error("Not authenticated");
       
@@ -206,6 +208,8 @@ export function createMutators(sess: Session | null) {
         creatorId: sess.user.id,
         assigneeId,
         estimate,
+        startDate: startDate || null,
+        dueDate: dueDate || null,
         createdAt: Date.now(),
         updatedAt: Date.now(),
         completedAt: null,
@@ -213,7 +217,7 @@ export function createMutators(sess: Session | null) {
       });
     },
 
-    async updateIssue(tx, { id, title, description, statusId, priorityId, projectId, assigneeId, estimate }: {
+    async updateIssue(tx, { id, title, description, statusId, priorityId, projectId, assigneeId, estimate, startDate, dueDate }: {
       id: string;
       title?: string;
       description?: string;
@@ -222,6 +226,8 @@ export function createMutators(sess: Session | null) {
       projectId?: string;
       assigneeId?: string;
       estimate?: number;
+      startDate?: number;
+      dueDate?: number;
     }) {
       if (!sess) throw new Error("Not authenticated");
       
@@ -254,6 +260,8 @@ export function createMutators(sess: Session | null) {
         ...(projectId !== undefined && { projectId }),
         ...(assigneeId !== undefined && { assigneeId }),
         ...(estimate !== undefined && { estimate }),
+        ...(startDate !== undefined && { startDate: startDate || null }),
+        ...(dueDate !== undefined && { dueDate: dueDate || null }),
         ...(completedAt && { completedAt }),
         ...(canceledAt && { canceledAt }),
         updatedAt: Date.now(),

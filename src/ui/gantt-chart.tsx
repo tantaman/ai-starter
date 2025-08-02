@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useZero } from "@/ui/use-zero.js";
 
 interface GanttChartProps {
   issues: any[];
@@ -20,12 +21,15 @@ interface GanttItem {
 }
 
 export function GanttChart({ issues, projects, onSelectIssue }: GanttChartProps) {
+  const zero = useZero();
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>(() => {
     const now: Date = new Date();
     const start: Date = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const end: Date = new Date(now.getFullYear(), now.getMonth() + 2, 0);
     return { start, end };
   });
+  const [draggedItem, setDraggedItem] = useState<GanttItem | null>(null);
+  const [dragOffset, setDragOffset] = useState<number>(0);
 
   // Convert issues and projects to gantt items
   const ganttItems: GanttItem[] = useMemo(() => {
@@ -52,12 +56,12 @@ export function GanttChart({ issues, projects, onSelectIssue }: GanttChartProps)
 
     // Add issues with dates
     issues?.forEach(issue => {
-      // Calculate dates based on creation and completion
-      let startDate: number = issue.createdAt;
-      let endDate: number = issue.completedAt || issue.createdAt + (7 * 24 * 60 * 60 * 1000); // Default 7 days duration
+      // Use explicit start/due dates if available, otherwise fall back to creation/completion dates
+      let startDate: number = issue.startDate || issue.createdAt;
+      let endDate: number = issue.dueDate || issue.completedAt || startDate + (7 * 24 * 60 * 60 * 1000); // Default 7 days duration
       
-      // If issue has estimate, use that for duration
-      if (issue.estimate && !issue.completedAt) {
+      // If issue has estimate and no due date, use that for duration
+      if (issue.estimate && !issue.dueDate && !issue.completedAt) {
         endDate = startDate + (issue.estimate * 24 * 60 * 60 * 1000); // Estimate in days
       }
       
@@ -140,6 +144,56 @@ export function GanttChart({ issues, projects, onSelectIssue }: GanttChartProps)
       start: new Date(prev.start.getTime() + offset * 24 * 60 * 60 * 1000),
       end: new Date(prev.end.getTime() + offset * 24 * 60 * 60 * 1000),
     }));
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, item: GanttItem): void => {
+    if (item.type === "project") return; // Don't allow dragging projects for now
+    
+    setDraggedItem(item);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    setDragOffset(offsetX);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragEnd = (): void => {
+    setDraggedItem(null);
+    setDragOffset(0);
+  };
+
+  const handleDragOver = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e: React.DragEvent): Promise<void> => {
+    e.preventDefault();
+    
+    if (!draggedItem) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const relativeX = e.clientX - rect.left - dragOffset;
+    const dayIndex = Math.floor(relativeX / timeScale.dayWidth);
+    
+    if (dayIndex < 0 || dayIndex >= timeScale.days.length) return;
+    
+    const newStartDate = new Date(timeScale.days[dayIndex]);
+    const duration = draggedItem.endDate - draggedItem.startDate;
+    const newEndDate = new Date(newStartDate.getTime() + duration);
+    
+    try {
+      await zero.mutate.updateIssue({
+        id: draggedItem.id,
+        startDate: newStartDate.getTime(),
+        dueDate: newEndDate.getTime(),
+      });
+    } catch (err) {
+      console.error("Failed to update issue dates:", err);
+    } finally {
+      setDraggedItem(null);
+      setDragOffset(0);
+    }
   };
 
   return (
@@ -239,7 +293,7 @@ export function GanttChart({ issues, projects, onSelectIssue }: GanttChartProps)
           </div>
 
           {/* Timeline */}
-          <div className="flex-1">
+          <div className="flex-1" onDragOver={handleDragOver} onDrop={handleDrop}>
             {/* Timeline Header */}
             <div className="h-12 bg-neutral-50 border-b border-neutral-200 flex">
               {timeScale.days.map((day, index) => (
@@ -261,6 +315,7 @@ export function GanttChart({ issues, projects, onSelectIssue }: GanttChartProps)
             <div className="relative">
               {ganttItems.map((item, index) => {
                 const position = getBarPosition(item);
+                const isDragging = draggedItem?.id === item.id;
                 return (
                   <div key={item.id} className="relative h-12 border-b border-neutral-100">
                     {/* Grid lines */}
@@ -274,13 +329,22 @@ export function GanttChart({ issues, projects, onSelectIssue }: GanttChartProps)
                     
                     {/* Task bar */}
                     <div
-                      className={`absolute top-2 h-8 rounded ${getStatusColor(item)} ${getPriorityIndicator(item.priority)} cursor-pointer hover:opacity-80 transition-opacity flex items-center px-2`}
+                      draggable={item.type === "issue"}
+                      className={`absolute top-2 h-8 rounded ${getStatusColor(item)} ${getPriorityIndicator(item.priority)} ${
+                        item.type === "issue" 
+                          ? "cursor-move hover:opacity-80" 
+                          : "cursor-pointer hover:opacity-80"
+                      } transition-opacity flex items-center px-2 ${
+                        isDragging ? "opacity-50 z-10" : ""
+                      }`}
                       style={{
                         left: position.left,
                         width: position.width,
                       }}
+                      onDragStart={(e) => handleDragStart(e, item)}
+                      onDragEnd={handleDragEnd}
                       onClick={() => {
-                        if (item.type === "issue") {
+                        if (item.type === "issue" && !isDragging) {
                           onSelectIssue(item.id);
                         }
                       }}
@@ -309,26 +373,31 @@ export function GanttChart({ issues, projects, onSelectIssue }: GanttChartProps)
 
       {/* Legend */}
       <div className="p-4 border-t border-neutral-200 bg-neutral-50">
-        <div className="flex items-center space-x-6 text-sm">
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-blue-500 rounded"></div>
-            <span>Projects</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-6 text-sm">
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-blue-500 rounded"></div>
+              <span>Projects</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-green-500 rounded"></div>
+              <span>Completed</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-blue-500 rounded"></div>
+              <span>In Progress</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+              <span>To Do</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-gray-400 rounded"></div>
+              <span>Backlog</span>
+            </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-green-500 rounded"></div>
-            <span>Completed</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-blue-500 rounded"></div>
-            <span>In Progress</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-            <span>To Do</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-gray-400 rounded"></div>
-            <span>Backlog</span>
+          <div className="text-xs text-neutral-500">
+            💡 Drag issue bars to reschedule
           </div>
         </div>
       </div>
