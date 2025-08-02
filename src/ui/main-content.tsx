@@ -5,6 +5,7 @@ import { useQuery, useZero } from "@/ui/use-zero.js";
 import { IssueDetail } from "./issue-detail.js";
 import { CreateIssueModal } from "./create-issue-modal.js";
 import { CreateProjectModal } from "./create-project-modal.js";
+import { GanttChart } from "./gantt-chart.js";
 
 interface MainContentProps {
   teamId: string;
@@ -25,7 +26,7 @@ export function MainContent({ teamId, teams, currentView, selectedIssueId, onSel
   const [teamProjects] = useQuery(queries.teamProjects(session, teamId));
   const [teamMembers] = useQuery(queries.teamMembers(session, teamId));
   const [selectedIssue] = useQuery(selectedIssueId ? queries.issueById(session, selectedIssueId) : queries.issueById(null, ""));
-  const [displayView, setDisplayView] = useState<"list" | "board">("list");
+  const [displayView, setDisplayView] = useState<"list" | "board" | "gantt">("list");
   const [showCreateIssue, setShowCreateIssue] = useState<boolean>(false);
   const [draggedIssue, setDraggedIssue] = useState<any>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
@@ -494,6 +495,16 @@ export function MainContent({ teamId, teams, currentView, selectedIssueId, onSel
               >
                 Board
               </button>
+              <button
+                className={`px-3 py-1 text-sm rounded ${
+                  displayView === "gantt"
+                    ? "bg-white text-neutral-900 shadow-sm"
+                    : "text-neutral-600 hover:text-neutral-900"
+                }`}
+                onClick={() => setDisplayView("gantt")}
+              >
+                Gantt
+              </button>
             </div>
             <button 
               className="btn btn-primary"
@@ -681,7 +692,7 @@ export function MainContent({ teamId, teams, currentView, selectedIssueId, onSel
               )}
             </div>
           </div>
-        ) : (
+        ) : displayView === "board" ? (
           // Board View
           <div className="h-full p-6">
             <div className="h-full overflow-x-auto">
@@ -765,6 +776,13 @@ export function MainContent({ teamId, teams, currentView, selectedIssueId, onSel
               </div>
             </div>
           </div>
+        ) : (
+          // Gantt View
+          <GanttChart
+            issues={currentIssues}
+            projects={teamProjects || []}
+            onSelectIssue={onSelectIssue}
+          />
         )}
       </div>
 
