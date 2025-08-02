@@ -155,10 +155,7 @@ They are the following:
 
 `pnpm run dev` will start everything and the website can be visited at the following URL: http://localhost:8080/
 
-### Rules of thumb:
-
-- After changing the `drizzle schema` run `pnpm run db:push` and `pnpm run gen-schema`
-- If `pnpm run dev` is running in the background then any changes to routes will get picked up and generated into `routeTree.gen.ts`.
+**After changing any code, run: `pnpm check:all` to check types**
 
 ## Architecture
 

@@ -16,7 +16,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push --force",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "check:all": "pnpm gen-schema && pnpm build && pnpm check"
   },
   "keywords": [],
   "author": "",
