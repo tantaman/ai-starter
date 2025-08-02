@@ -14,6 +14,8 @@ function Home() {
   const { data: session } = useSession();
   const [userTeams] = useQuery(queries.userTeams(session));
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
+  const [currentView, setCurrentView] = useState<"all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects">("all");
+  const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   
   // Update selected team when teams change
   useEffect(() => {
@@ -74,8 +76,15 @@ function Home() {
         teams={userTeams} 
         selectedTeamId={selectedTeamId}
         onTeamSelect={setSelectedTeamId}
+        currentView={currentView}
+        onViewChange={setCurrentView}
       />
-      <MainContent teamId={selectedTeamId} />
+      <MainContent 
+        teamId={selectedTeamId} 
+        currentView={currentView}
+        selectedIssueId={selectedIssueId}
+        onSelectIssue={setSelectedIssueId}
+      />
     </div>
   );
 }
@@ -84,9 +93,11 @@ interface SidebarProps {
   teams: any[];
   selectedTeamId: string;
   onTeamSelect: (teamId: string) => void;
+  currentView: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects";
+  onViewChange: (view: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects") => void;
 }
 
-function Sidebar({ teams, selectedTeamId, onTeamSelect }: SidebarProps) {
+function Sidebar({ teams, selectedTeamId, onTeamSelect, currentView, onViewChange }: SidebarProps) {
   const { data: session } = useSession();
   const [teamIssues] = useQuery(queries.teamIssues(session, selectedTeamId, null, null, null));
   const [userAssignedIssues] = useQuery(queries.userAssignedIssues(session, selectedTeamId));
@@ -127,12 +138,22 @@ function Sidebar({ teams, selectedTeamId, onTeamSelect }: SidebarProps) {
             Your Work
           </div>
           
-          <button className="nav-btn w-full text-left flex items-center justify-between">
+          <button 
+            className={`nav-btn w-full text-left flex items-center justify-between ${
+              currentView === "myIssues" ? "bg-neutral-100" : ""
+            }`}
+            onClick={() => onViewChange("myIssues")}
+          >
             <span>My Issues</span>
             <span className="text-xs text-neutral-500">{myOpenIssues.length}</span>
           </button>
           
-          <button className="nav-btn w-full text-left">
+          <button 
+            className={`nav-btn w-full text-left ${
+              currentView === "createdByMe" ? "bg-neutral-100" : ""
+            }`}
+            onClick={() => onViewChange("createdByMe")}
+          >
             Created by me
           </button>
           
@@ -140,20 +161,40 @@ function Sidebar({ teams, selectedTeamId, onTeamSelect }: SidebarProps) {
             Team
           </div>
           
-          <button className="nav-btn w-full text-left flex items-center justify-between">
+          <button 
+            className={`nav-btn w-full text-left flex items-center justify-between ${
+              currentView === "all" ? "bg-neutral-100" : ""
+            }`}
+            onClick={() => onViewChange("all")}
+          >
             <span>All Issues</span>
             <span className="text-xs text-neutral-500">{openIssues.length}</span>
           </button>
           
-          <button className="nav-btn w-full text-left">
+          <button 
+            className={`nav-btn w-full text-left ${
+              currentView === "backlog" ? "bg-neutral-100" : ""
+            }`}
+            onClick={() => onViewChange("backlog")}
+          >
             Backlog
           </button>
           
-          <button className="nav-btn w-full text-left">
+          <button 
+            className={`nav-btn w-full text-left ${
+              currentView === "active" ? "bg-neutral-100" : ""
+            }`}
+            onClick={() => onViewChange("active")}
+          >
             Active
           </button>
           
-          <button className="nav-btn w-full text-left">
+          <button 
+            className={`nav-btn w-full text-left ${
+              currentView === "projects" ? "bg-neutral-100" : ""
+            }`}
+            onClick={() => onViewChange("projects")}
+          >
             Projects
           </button>
           
@@ -197,15 +238,63 @@ function Sidebar({ teams, selectedTeamId, onTeamSelect }: SidebarProps) {
 
 interface MainContentProps {
   teamId: string;
+  currentView: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects";
+  selectedIssueId: string | null;
+  onSelectIssue: (issueId: string | null) => void;
 }
 
-function MainContent({ teamId }: MainContentProps) {
+function MainContent({ teamId, currentView, selectedIssueId, onSelectIssue }: MainContentProps) {
   const { data: session } = useSession();
   const [teamIssues] = useQuery(queries.teamIssues(session, teamId, null, null, null));
+  const [userAssignedIssues] = useQuery(queries.userAssignedIssues(session, teamId));
+  const [userCreatedIssues] = useQuery(queries.userCreatedIssues(session, teamId));
   const [teamStatuses] = useQuery(queries.teamIssueStatuses(session, teamId));
   const [teamPriorities] = useQuery(queries.teamIssuePriorities(session, teamId));
-  const [selectedView, setSelectedView] = useState<"list" | "board">("list");
+  const [teamProjects] = useQuery(queries.teamProjects(session, teamId));
+  const [selectedIssue] = useQuery(selectedIssueId ? queries.issueById(session, selectedIssueId) : queries.issueById(null, ""));
+  const [displayView, setDisplayView] = useState<"list" | "board">("list");
   const [showCreateIssue, setShowCreateIssue] = useState<boolean>(false);
+
+  // Get issues based on current view
+  const getIssuesForCurrentView = (): any[] => {
+    switch (currentView) {
+      case "myIssues":
+        return userAssignedIssues?.filter(issue => 
+          issue.status?.type === "backlog" || 
+          issue.status?.type === "unstarted" || 
+          issue.status?.type === "started"
+        ) || [];
+      case "createdByMe":
+        return userCreatedIssues || [];
+      case "backlog":
+        return teamIssues?.filter(issue => issue.status?.type === "backlog") || [];
+      case "active":
+        return teamIssues?.filter(issue => 
+          issue.status?.type === "unstarted" || 
+          issue.status?.type === "started"
+        ) || [];
+      case "projects":
+        return []; // We'll handle projects separately
+      case "all":
+      default:
+        return teamIssues || [];
+    }
+  };
+
+  const currentIssues: any[] = getIssuesForCurrentView();
+  
+  // Get view title
+  const getViewTitle = (): string => {
+    switch (currentView) {
+      case "myIssues": return "My Issues";
+      case "createdByMe": return "Created by me";
+      case "backlog": return "Backlog";
+      case "active": return "Active Issues";
+      case "projects": return "Projects";
+      case "all":
+      default: return "All Issues";
+    }
+  };
 
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
@@ -214,57 +303,78 @@ function MainContent({ teamId }: MainContentProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-semibold text-neutral-900">
-              All Issues
+              {getViewTitle()}
             </h1>
-            <div className="flex items-center space-x-2">
-              <button 
-                className={`px-3 py-1 text-sm rounded-md ${
-                  selectedView === "list" 
-                    ? "bg-neutral-100 text-neutral-900" 
-                    : "text-neutral-600 hover:text-neutral-900"
-                }`}
-                onClick={() => setSelectedView("list")}
-              >
-                List
-              </button>
-              <button 
-                className={`px-3 py-1 text-sm rounded-md ${
-                  selectedView === "board" 
-                    ? "bg-neutral-100 text-neutral-900" 
-                    : "text-neutral-600 hover:text-neutral-900"
-                }`}
-                onClick={() => setSelectedView("board")}
-              >
-                Board
-              </button>
-            </div>
+            {currentView !== "projects" && (
+              <div className="flex items-center space-x-2">
+                <button 
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    displayView === "list" 
+                      ? "bg-neutral-100 text-neutral-900" 
+                      : "text-neutral-600 hover:text-neutral-900"
+                  }`}
+                  onClick={() => setDisplayView("list")}
+                >
+                  List
+                </button>
+                <button 
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    displayView === "board" 
+                      ? "bg-neutral-100 text-neutral-900" 
+                      : "text-neutral-600 hover:text-neutral-900"
+                  }`}
+                  onClick={() => setDisplayView("board")}
+                >
+                  Board
+                </button>
+              </div>
+            )}
           </div>
           
           <div className="flex items-center space-x-3">
+            {selectedIssueId && (
+              <button 
+                className="btn btn-default"
+                onClick={() => onSelectIssue(null)}
+              >
+                ← Back to {getViewTitle()}
+              </button>
+            )}
             <button className="btn btn-default">
               Filter
             </button>
-            <button 
-              className="btn btn-primary"
-              onClick={() => setShowCreateIssue(true)}
-            >
-              New Issue
-            </button>
+            {currentView !== "projects" && (
+              <button 
+                className="btn btn-primary"
+                onClick={() => setShowCreateIssue(true)}
+              >
+                New Issue
+              </button>
+            )}
           </div>
         </div>
       </header>
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        {selectedView === "list" ? (
+        {selectedIssueId && selectedIssue && selectedIssue.id ? (
+          <IssueDetail 
+            issue={selectedIssue}
+            onClose={() => onSelectIssue(null)}
+          />
+        ) : currentView === "projects" ? (
+          <ProjectsList projects={teamProjects || []} />
+        ) : displayView === "list" ? (
           <IssuesList 
-            issues={teamIssues || []} 
+            issues={currentIssues} 
             onCreateIssue={() => setShowCreateIssue(true)}
+            onSelectIssue={onSelectIssue}
           />
         ) : (
           <IssuesBoard 
-            issues={teamIssues || []} 
+            issues={currentIssues} 
             statuses={teamStatuses || []}
+            onSelectIssue={onSelectIssue}
           />
         )}
       </div>
@@ -285,9 +395,10 @@ function MainContent({ teamId }: MainContentProps) {
 interface IssuesListProps {
   issues: any[];
   onCreateIssue?: () => void;
+  onSelectIssue?: (issueId: string) => void;
 }
 
-function IssuesList({ issues, onCreateIssue }: IssuesListProps) {
+function IssuesList({ issues, onCreateIssue, onSelectIssue }: IssuesListProps) {
   if (issues.length === 0) {
     return (
       <div className="p-8 text-center">
@@ -309,6 +420,7 @@ function IssuesList({ issues, onCreateIssue }: IssuesListProps) {
           <div 
             key={issue.id}
             className="flex items-center px-4 py-3 bg-white rounded-lg border border-neutral-200 hover:border-neutral-300 cursor-pointer transition-colors"
+            onClick={() => onSelectIssue?.(issue.id)}
           >
             <div className="flex items-center space-x-3 flex-1">
               <div className="flex items-center space-x-2">
@@ -365,9 +477,10 @@ function IssuesList({ issues, onCreateIssue }: IssuesListProps) {
 interface IssuesBoardProps {
   issues: any[];
   statuses: any[];
+  onSelectIssue?: (issueId: string) => void;
 }
 
-function IssuesBoard({ issues, statuses }: IssuesBoardProps) {
+function IssuesBoard({ issues, statuses, onSelectIssue }: IssuesBoardProps) {
   const groupedIssues = statuses.reduce((acc, status) => {
     acc[status.id] = issues.filter(issue => issue.statusId === status.id);
     return acc;
@@ -391,6 +504,7 @@ function IssuesBoard({ issues, statuses }: IssuesBoardProps) {
               <div 
                 key={issue.id}
                 className="bg-white p-4 rounded-lg border border-neutral-200 hover:border-neutral-300 cursor-pointer transition-colors"
+                onClick={() => onSelectIssue?.(issue.id)}
               >
                 <div className="mb-2">
                   <div className="flex items-center space-x-2 mb-2">
@@ -429,6 +543,219 @@ function IssuesBoard({ issues, statuses }: IssuesBoardProps) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+interface IssueDetailProps {
+  issue: any;
+  onClose: () => void;
+}
+
+function IssueDetail({ issue, onClose }: IssueDetailProps) {
+  const zero = useZero();
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [commentText, setCommentText] = useState<string>("");
+
+  const handleAddComment = async (): Promise<void> => {
+    if (!commentText.trim()) return;
+    
+    try {
+      const commentId: string = `comment_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+      await zero.mutate.createIssueComment({
+        id: commentId,
+        issueId: issue.id,
+        body: commentText.trim(),
+      });
+      setCommentText("");
+    } catch (err) {
+      console.error("Failed to add comment:", err);
+    }
+  };
+
+  return (
+    <div className="flex h-full">
+      {/* Main content */}
+      <div className="flex-1 p-6">
+        <div className="max-w-4xl mx-auto">
+          {/* Issue header */}
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className={`w-3 h-3 rounded-full ${
+                issue.priority?.value >= 3 ? "bg-red-500" :
+                issue.priority?.value >= 2 ? "bg-orange-500" :
+                issue.priority?.value >= 1 ? "bg-yellow-500" :
+                "bg-gray-400"
+              }`} />
+              <span className="text-sm text-neutral-500">
+                {issue.team?.identifier}-{issue.number}
+              </span>
+              <div className={`px-2 py-1 text-xs rounded-full ${
+                issue.status?.type === "completed" ? "bg-green-100 text-green-800" :
+                issue.status?.type === "started" ? "bg-blue-100 text-blue-800" :
+                issue.status?.type === "unstarted" ? "bg-yellow-100 text-yellow-800" :
+                "bg-gray-100 text-gray-800"
+              }`}>
+                {issue.status?.name}
+              </div>
+            </div>
+            
+            <h1 className="text-2xl font-bold text-neutral-900 mb-4">
+              {issue.title}
+            </h1>
+            
+            {issue.description && (
+              <div className="text-neutral-700 mb-6 whitespace-pre-wrap">
+                {issue.description}
+              </div>
+            )}
+          </div>
+
+          {/* Issue metadata */}
+          <div className="grid grid-cols-2 gap-6 mb-8">
+            <div>
+              <h3 className="text-sm font-medium text-neutral-500 mb-2">Assignee</h3>
+              <div className="flex items-center space-x-2">
+                {issue.assignee?.image && (
+                  <img 
+                    src={issue.assignee.image} 
+                    alt={issue.assignee.name} 
+                    className="w-6 h-6 rounded-full"
+                  />
+                )}
+                <span className="text-sm">
+                  {issue.assignee?.name || "Unassigned"}
+                </span>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium text-neutral-500 mb-2">Priority</h3>
+              <span className="text-sm">{issue.priority?.name || "No Priority"}</span>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium text-neutral-500 mb-2">Created by</h3>
+              <div className="flex items-center space-x-2">
+                {issue.creator?.image && (
+                  <img 
+                    src={issue.creator.image} 
+                    alt={issue.creator.name} 
+                    className="w-6 h-6 rounded-full"
+                  />
+                )}
+                <span className="text-sm">{issue.creator?.name}</span>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium text-neutral-500 mb-2">Project</h3>
+              <span className="text-sm">{issue.project?.name || "No Project"}</span>
+            </div>
+          </div>
+
+          {/* Comments section */}
+          <div className="border-t border-neutral-200 pt-6">
+            <h3 className="text-lg font-semibold mb-4">Activity</h3>
+            
+            {/* Comment input */}
+            <div className="mb-6">
+              <textarea
+                className="input w-full"
+                rows={3}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Add a comment..."
+              />
+              <div className="flex justify-end mt-2">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleAddComment}
+                  disabled={!commentText.trim()}
+                >
+                  Comment
+                </button>
+              </div>
+            </div>
+
+            {/* Comments list */}
+            <div className="space-y-4">
+              {issue.comments?.map((comment: any) => (
+                <div key={comment.id} className="bg-neutral-50 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    {comment.author?.image && (
+                      <img 
+                        src={comment.author.image} 
+                        alt={comment.author.name} 
+                        className="w-6 h-6 rounded-full"
+                      />
+                    )}
+                    <span className="font-medium text-sm">{comment.author?.name}</span>
+                    <span className="text-xs text-neutral-500">
+                      {new Date(comment.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="text-sm text-neutral-700 whitespace-pre-wrap">
+                    {comment.body}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ProjectsListProps {
+  projects: any[];
+}
+
+function ProjectsList({ projects }: ProjectsListProps) {
+  if (projects.length === 0) {
+    return (
+      <div className="p-8 text-center">
+        <div className="text-neutral-500 mb-4">No projects found</div>
+        <button className="btn btn-primary">
+          Create your first project
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {projects.map((project) => (
+          <div 
+            key={project.id}
+            className="bg-white p-6 rounded-lg border border-neutral-200 hover:border-neutral-300 cursor-pointer transition-colors"
+          >
+            <h3 className="font-semibold text-lg mb-2">{project.name}</h3>
+            {project.description && (
+              <p className="text-neutral-600 text-sm mb-4 line-clamp-3">
+                {project.description}
+              </p>
+            )}
+            <div className="flex items-center justify-between text-sm text-neutral-500">
+              <span>{project.identifier}</span>
+              {project.lead && (
+                <div className="flex items-center space-x-1">
+                  {project.lead.image && (
+                    <img 
+                      src={project.lead.image} 
+                      alt={project.lead.name} 
+                      className="w-4 h-4 rounded-full"
+                    />
+                  )}
+                  <span>{project.lead.name}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
