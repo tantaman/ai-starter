@@ -23,7 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@rocicorp/zero": "file:../../mono/packages/zero/rocicorp-zero-0.22.2025072901.tgz",
+    "@rocicorp/zero": "0.22.2025080201",
     "@rocicorp/zero-sqlite3": "^1.0.8",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-router": "^1.128.0",
