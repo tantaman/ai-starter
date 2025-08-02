@@ -22,7 +22,7 @@ function Home() {
   }, [session, navigate]);
   const [userTeams] = useQuery(queries.userTeams(session));
   const [selectedTeamId, setSelectedTeamId] = useState<string>("");
-  const [currentView, setCurrentView] = useState<"all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects">("all");
+  const [currentView, setCurrentView] = useState<"all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects" | "team">("all");
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
 
   // Set the first team as selected when teams load
@@ -65,6 +65,7 @@ function Home() {
       />
       <MainContent 
         teamId={selectedTeamId} 
+        teams={userTeams}
         currentView={currentView}
         selectedIssueId={selectedIssueId}
         onSelectIssue={setSelectedIssueId}

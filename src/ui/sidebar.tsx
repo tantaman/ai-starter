@@ -8,8 +8,8 @@ interface SidebarProps {
   teams: any[];
   selectedTeamId: string;
   onTeamSelect: (teamId: string) => void;
-  currentView: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects";
-  onViewChange: (view: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects") => void;
+  currentView: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects" | "team";
+  onViewChange: (view: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects" | "team") => void;
   onCloseIssueDetail: () => void;
 }
 
@@ -31,7 +31,7 @@ export function Sidebar({ teams, selectedTeamId, onTeamSelect, currentView, onVi
     issue.status?.type === "started"
   ) || [];
 
-  const handleViewChange = (view: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects"): void => {
+  const handleViewChange = (view: "all" | "myIssues" | "createdByMe" | "backlog" | "active" | "projects" | "team"): void => {
     onCloseIssueDetail(); // Close any open issue detail first
     onViewChange(view); // Then change the view
   };
@@ -127,15 +127,16 @@ export function Sidebar({ teams, selectedTeamId, onTeamSelect, currentView, onVi
             </button>
             
             <div className="text-xs font-medium text-neutral-500 uppercase tracking-wide mb-2 mt-6">
-              Views
+              Settings
             </div>
             
-            <button className="nav-btn w-full text-left">
-              Board
-            </button>
-            
-            <button className="nav-btn w-full text-left">
-              Timeline
+            <button 
+              className={`nav-btn w-full text-left ${
+                currentView === "team" ? "bg-neutral-100" : ""
+              }`}
+              onClick={() => handleViewChange("team")}
+            >
+              Team Settings
             </button>
           </div>
         </nav>
