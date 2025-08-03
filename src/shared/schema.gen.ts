@@ -160,6 +160,541 @@ export const schema = {
       },
       primaryKey: ["id"],
     },
+    issue: {
+      name: "issue",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "id"
+          >,
+        },
+        number: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "number"
+          >,
+        },
+        title: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "title"
+          >,
+        },
+        description: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "description"
+          >,
+        },
+        statusId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "statusId"
+          >,
+          serverName: "status_id",
+        },
+        priorityId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "priorityId"
+          >,
+          serverName: "priority_id",
+        },
+        projectId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "projectId"
+          >,
+          serverName: "project_id",
+        },
+        teamId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "teamId"
+          >,
+          serverName: "team_id",
+        },
+        creatorId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "creatorId"
+          >,
+          serverName: "creator_id",
+        },
+        assigneeId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "assigneeId"
+          >,
+          serverName: "assignee_id",
+        },
+        estimate: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "estimate"
+          >,
+        },
+        startDate: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "startDate"
+          >,
+          serverName: "start_date",
+        },
+        dueDate: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "dueDate"
+          >,
+          serverName: "due_date",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+        completedAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "completedAt"
+          >,
+          serverName: "completed_at",
+        },
+        canceledAt: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issue",
+            "canceledAt"
+          >,
+          serverName: "canceled_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
+    issueComment: {
+      name: "issueComment",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueComment",
+            "id"
+          >,
+        },
+        body: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueComment",
+            "body"
+          >,
+        },
+        issueId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueComment",
+            "issueId"
+          >,
+          serverName: "issue_id",
+        },
+        authorId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueComment",
+            "authorId"
+          >,
+          serverName: "author_id",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueComment",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueComment",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "issue_comment",
+    },
+    issueLabel: {
+      name: "issueLabel",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabel",
+            "id"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabel",
+            "name"
+          >,
+        },
+        color: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabel",
+            "color"
+          >,
+        },
+        teamId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabel",
+            "teamId"
+          >,
+          serverName: "team_id",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabel",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "issue_label",
+    },
+    issueLabelAssignment: {
+      name: "issueLabelAssignment",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabelAssignment",
+            "id"
+          >,
+        },
+        issueId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabelAssignment",
+            "issueId"
+          >,
+          serverName: "issue_id",
+        },
+        labelId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueLabelAssignment",
+            "labelId"
+          >,
+          serverName: "label_id",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "issue_label_assignment",
+    },
+    issuePriority: {
+      name: "issuePriority",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issuePriority",
+            "id"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issuePriority",
+            "name"
+          >,
+        },
+        value: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issuePriority",
+            "value"
+          >,
+        },
+        teamId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issuePriority",
+            "teamId"
+          >,
+          serverName: "team_id",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "issue_priority",
+    },
+    issueStatus: {
+      name: "issueStatus",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueStatus",
+            "id"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueStatus",
+            "name"
+          >,
+        },
+        type: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueStatus",
+            "type"
+          >,
+        },
+        position: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueStatus",
+            "position"
+          >,
+        },
+        teamId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueStatus",
+            "teamId"
+          >,
+          serverName: "team_id",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "issueStatus",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "issue_status",
+    },
+    project: {
+      name: "project",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "id"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "name"
+          >,
+        },
+        identifier: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "identifier"
+          >,
+        },
+        description: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "description"
+          >,
+        },
+        teamId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "teamId"
+          >,
+          serverName: "team_id",
+        },
+        leadId: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "leadId"
+          >,
+          serverName: "lead_id",
+        },
+        startDate: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "startDate"
+          >,
+          serverName: "start_date",
+        },
+        targetDate: {
+          type: "number",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "targetDate"
+          >,
+          serverName: "target_date",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "project",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
     session: {
       name: "session",
       columns: {
@@ -243,6 +778,132 @@ export const schema = {
         },
       },
       primaryKey: ["id"],
+    },
+    team: {
+      name: "team",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "team",
+            "id"
+          >,
+        },
+        name: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "team",
+            "name"
+          >,
+        },
+        identifier: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "team",
+            "identifier"
+          >,
+        },
+        description: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "team",
+            "description"
+          >,
+        },
+        image: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "team",
+            "image"
+          >,
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "team",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "team",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
+    teamMember: {
+      name: "teamMember",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "teamMember",
+            "id"
+          >,
+        },
+        teamId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "teamMember",
+            "teamId"
+          >,
+          serverName: "team_id",
+        },
+        userId: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "teamMember",
+            "userId"
+          >,
+          serverName: "user_id",
+        },
+        role: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "teamMember",
+            "role"
+          >,
+        },
+        joinedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "teamMember",
+            "joinedAt"
+          >,
+          serverName: "joined_at",
+        },
+      },
+      primaryKey: ["id"],
+      serverName: "team_member",
     },
     user: {
       name: "user",
@@ -391,6 +1052,188 @@ export const schema = {
         },
       ],
     },
+    issueComment: {
+      issue: [
+        {
+          sourceField: ["issueId"],
+          destField: ["id"],
+          destSchema: "issue",
+          cardinality: "one",
+        },
+      ],
+      author: [
+        {
+          sourceField: ["authorId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    issueLabelAssignment: {
+      issue: [
+        {
+          sourceField: ["issueId"],
+          destField: ["id"],
+          destSchema: "issue",
+          cardinality: "one",
+        },
+      ],
+      label: [
+        {
+          sourceField: ["labelId"],
+          destField: ["id"],
+          destSchema: "issueLabel",
+          cardinality: "one",
+        },
+      ],
+    },
+    issueLabel: {
+      team: [
+        {
+          sourceField: ["teamId"],
+          destField: ["id"],
+          destSchema: "team",
+          cardinality: "one",
+        },
+      ],
+      assignments: [
+        {
+          sourceField: ["id"],
+          destField: ["labelId"],
+          destSchema: "issueLabelAssignment",
+          cardinality: "many",
+        },
+      ],
+    },
+    issuePriority: {
+      team: [
+        {
+          sourceField: ["teamId"],
+          destField: ["id"],
+          destSchema: "team",
+          cardinality: "one",
+        },
+      ],
+      issues: [
+        {
+          sourceField: ["id"],
+          destField: ["priorityId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+    },
+    issue: {
+      status: [
+        {
+          sourceField: ["statusId"],
+          destField: ["id"],
+          destSchema: "issueStatus",
+          cardinality: "one",
+        },
+      ],
+      priority: [
+        {
+          sourceField: ["priorityId"],
+          destField: ["id"],
+          destSchema: "issuePriority",
+          cardinality: "one",
+        },
+      ],
+      project: [
+        {
+          sourceField: ["projectId"],
+          destField: ["id"],
+          destSchema: "project",
+          cardinality: "one",
+        },
+      ],
+      team: [
+        {
+          sourceField: ["teamId"],
+          destField: ["id"],
+          destSchema: "team",
+          cardinality: "one",
+        },
+      ],
+      creator: [
+        {
+          sourceField: ["creatorId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      assignee: [
+        {
+          sourceField: ["assigneeId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      comments: [
+        {
+          sourceField: ["id"],
+          destField: ["issueId"],
+          destSchema: "issueComment",
+          cardinality: "many",
+        },
+      ],
+      labelAssignments: [
+        {
+          sourceField: ["id"],
+          destField: ["issueId"],
+          destSchema: "issueLabelAssignment",
+          cardinality: "many",
+        },
+      ],
+    },
+    issueStatus: {
+      team: [
+        {
+          sourceField: ["teamId"],
+          destField: ["id"],
+          destSchema: "team",
+          cardinality: "one",
+        },
+      ],
+      issues: [
+        {
+          sourceField: ["id"],
+          destField: ["statusId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+    },
+    project: {
+      team: [
+        {
+          sourceField: ["teamId"],
+          destField: ["id"],
+          destSchema: "team",
+          cardinality: "one",
+        },
+      ],
+      lead: [
+        {
+          sourceField: ["leadId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      issues: [
+        {
+          sourceField: ["id"],
+          destField: ["projectId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+    },
     session: {
       user: [
         {
@@ -398,6 +1241,74 @@ export const schema = {
           destField: ["id"],
           destSchema: "user",
           cardinality: "one",
+        },
+      ],
+    },
+    teamMember: {
+      team: [
+        {
+          sourceField: ["teamId"],
+          destField: ["id"],
+          destSchema: "team",
+          cardinality: "one",
+        },
+      ],
+      user: [
+        {
+          sourceField: ["userId"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
+    team: {
+      members: [
+        {
+          sourceField: ["id"],
+          destField: ["teamId"],
+          destSchema: "teamMember",
+          cardinality: "many",
+        },
+      ],
+      projects: [
+        {
+          sourceField: ["id"],
+          destField: ["teamId"],
+          destSchema: "project",
+          cardinality: "many",
+        },
+      ],
+      issues: [
+        {
+          sourceField: ["id"],
+          destField: ["teamId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+      issueStatuses: [
+        {
+          sourceField: ["id"],
+          destField: ["teamId"],
+          destSchema: "issueStatus",
+          cardinality: "many",
+        },
+      ],
+      issuePriorities: [
+        {
+          sourceField: ["id"],
+          destField: ["teamId"],
+          destSchema: "issuePriority",
+          cardinality: "many",
+        },
+      ],
+      issueLabels: [
+        {
+          sourceField: ["id"],
+          destField: ["teamId"],
+          destSchema: "issueLabel",
+          cardinality: "many",
         },
       ],
     },
@@ -415,6 +1326,46 @@ export const schema = {
           sourceField: ["id"],
           destField: ["userId"],
           destSchema: "account",
+          cardinality: "many",
+        },
+      ],
+      teamMemberships: [
+        {
+          sourceField: ["id"],
+          destField: ["userId"],
+          destSchema: "teamMember",
+          cardinality: "many",
+        },
+      ],
+      createdIssues: [
+        {
+          sourceField: ["id"],
+          destField: ["creatorId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+      assignedIssues: [
+        {
+          sourceField: ["id"],
+          destField: ["assigneeId"],
+          destSchema: "issue",
+          cardinality: "many",
+        },
+      ],
+      ledProjects: [
+        {
+          sourceField: ["id"],
+          destField: ["leadId"],
+          destSchema: "project",
+          cardinality: "many",
+        },
+      ],
+      issueComments: [
+        {
+          sourceField: ["id"],
+          destField: ["authorId"],
+          destSchema: "issueComment",
           cardinality: "many",
         },
       ],
