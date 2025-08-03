@@ -160,6 +160,108 @@ export const schema = {
       },
       primaryKey: ["id"],
     },
+    game: {
+      name: "game",
+      columns: {
+        id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "id"
+          >,
+        },
+        player1Id: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "player1Id"
+          >,
+          serverName: "player1_id",
+        },
+        player2Id: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "player2Id"
+          >,
+          serverName: "player2_id",
+        },
+        board: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "board"
+          >,
+        },
+        currentPlayer: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "currentPlayer"
+          >,
+          serverName: "current_player",
+        },
+        status: {
+          type: "string",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "status"
+          >,
+        },
+        winner: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "winner"
+          >,
+        },
+        inviteCode: {
+          type: "string",
+          optional: true,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "inviteCode"
+          >,
+          serverName: "invite_code",
+        },
+        createdAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "createdAt"
+          >,
+          serverName: "created_at",
+        },
+        updatedAt: {
+          type: "number",
+          optional: false,
+          customType: null as unknown as ZeroCustomType<
+            ZeroSchema,
+            "game",
+            "updatedAt"
+          >,
+          serverName: "updated_at",
+        },
+      },
+      primaryKey: ["id"],
+    },
     session: {
       name: "session",
       columns: {
@@ -391,6 +493,24 @@ export const schema = {
         },
       ],
     },
+    game: {
+      player1: [
+        {
+          sourceField: ["player1Id"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+      player2: [
+        {
+          sourceField: ["player2Id"],
+          destField: ["id"],
+          destSchema: "user",
+          cardinality: "one",
+        },
+      ],
+    },
     session: {
       user: [
         {
@@ -415,6 +535,22 @@ export const schema = {
           sourceField: ["id"],
           destField: ["userId"],
           destSchema: "account",
+          cardinality: "many",
+        },
+      ],
+      gamesAsPlayer1: [
+        {
+          sourceField: ["id"],
+          destField: ["player1Id"],
+          destSchema: "game",
+          cardinality: "many",
+        },
+      ],
+      gamesAsPlayer2: [
+        {
+          sourceField: ["id"],
+          destField: ["player2Id"],
+          destSchema: "game",
           cardinality: "many",
         },
       ],
